@@ -7,7 +7,7 @@ interface RoutesLayoutProps {
 const RoutesLayout = ({children}:RoutesLayoutProps) => {
     return (
         <div className="flex flex-col min-h-screen">
-            <Header title={"Kurban Otomasyon"}/>
+            <Header/>
             <main className="flex-grow container mx-auto py-6">
                 {children}
             </main>
