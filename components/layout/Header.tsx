@@ -26,14 +26,14 @@ const Header = ({ title = "Kesim listesi" }: HeaderProps) => {
     }, []);
 
     return (
-        <header className="flex items-center justify-between px-6 py-3 text-green-900 bg-white border-b border-green-800 shadow-md">
+        <header className="flex items-center justify-between flex-col sm:flex-row gap-2 px-6 py-3 text-green-900 bg-white border-b border-green-800 shadow-md">
             {/* Logo ve sol kısım */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1 shrink-0">
                 <Image
                     src="/images/logo.png"
                     alt="Logo"
                     sizes="(max-width: 48px)"
-                    className="rounded-full object-contain w-full h-12"
+                    className="rounded-full object-contain w-full h-14"
                     priority
                     width={1600}
                     height={455}
@@ -41,13 +41,15 @@ const Header = ({ title = "Kesim listesi" }: HeaderProps) => {
             </div>
 
             {/* Orta kısım - Başlık */}
-            <div className="text-2xl font-bold">
+            <div className="text-xl sm:text-3xl font-bold px-2.5">
                 {title}
             </div>
 
             {/* Sağ kısım - Saat */}
-            <div className="text-xl font-bold">
-                {currentTime}
+            <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                <div className="text-xl font-bold">
+                    {currentTime}
+                </div>
             </div>
         </header>
     );

@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import type {Metadata} from "next";
+import {Montserrat} from "next/font/google";
 import "./globals.css";
 import React from "react";
 
@@ -10,22 +10,26 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Kurban Otomasyon Live Module",
-  description: "Kurban Otomasyon Live Module",
+    title: "Kurban Otomasyon Live Module",
+    description: "Kurban Otomasyon Live Module",
+    icons: {
+        icon: '/public/images/icon-144x144.png',
+    },
+    metadataBase: new URL('http://localhost:3000'),
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="tr">
-      <body
-        className={`${montserrat.variable} antialiased`}
-      >
+    return (
+        <html lang="tr">
+        <body
+            className={`${montserrat.variable} antialiased`}
+        >
         {children}
-      </body>
-    </html>
-  );
+        </body>
+        </html>
+    );
 }
