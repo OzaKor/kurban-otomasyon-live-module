@@ -139,5 +139,7 @@ fabric.properties
 # local env files
 .env*.local
 
+*~
+
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,nextjs
