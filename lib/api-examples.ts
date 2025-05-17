@@ -130,6 +130,34 @@ async function getUserProfile(userId: number, token: string): Promise<User> {
   }
 }
 
+// Login Example
+async function login(email: string, password: string): Promise<User> {
+  try {
+    const response = await axios.post<User>(`/users/login`, {
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error logging in:', error);
+    throw error;
+  }
+}
+
+// Logout Example
+async function logout(token: string): Promise<void> {
+  try {
+    await axios.post('/users/logout', {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    throw error;
+  }
+}
+
 // Example usage in a React component
 /*
 async function ExampleComponent() {
@@ -166,7 +194,9 @@ export {
   updateUserEmail,
   deleteUser,
   uploadFile,
-  getUserProfile
+  getUserProfile,
+  login,
+  logout
 };
 
 export type { User, CreateUserDto };
