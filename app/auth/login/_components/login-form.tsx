@@ -15,23 +15,75 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import LoginSchema from "@/app/auth/schema/loginSchema";
+import axios from "@/lib/axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   // Initialize form
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "super_admin@admin.com",
+      password: "ozkr#.Gs#",
     },
   });
 
   // Handle form submission
-  function onSubmit(values: z.infer<typeof LoginSchema>) {
-    console.log("Login attempt with:", values);
-    // Handle login logic here
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+    try {
+
+      const response = await axios.post("/api/auth/login", {
+        email: values.email,
+        password: values.password,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log("Login successful:", response);
+      // Handle successful login (e.g., redirect, set user state, etc.)
+      toast.success("Giriş Yapıldı", {
+        id: "login-success",
+        duration: 5000,
+        icon: "✅",
+        onAutoClose(toast) {
+            console.log("Toast auto closed", toast);
+            router.push("/");
+        },
+      });
+      
+    } catch (error: any) {
+      console.error("Login error:", error);
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error data:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('No response received:', error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error:', error.message);
+      }
+
+      toast.error("Giriş Yapılırken Bir Hata Oluştu", {
+        id: "login-error",
+        duration: 1500,
+        icon: "❌",
+        onAutoClose(toast) {
+            console.log("Toast auto closed", toast);
+            router.push("/auth/login");
+        },
+      });
+    }
   }
   return (
     <Form {...form}>
