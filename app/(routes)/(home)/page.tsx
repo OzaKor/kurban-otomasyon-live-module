@@ -1,10 +1,9 @@
 import React from 'react';
-import {Button} from "@/components/ui/button";
 
 const Home = () => {
     return (
         <div>
-            <Button>Click me</Button>
+            Kesim Listesi gelecek
         </div>
     );
 };

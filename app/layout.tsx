@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {Montserrat} from "next/font/google";
 import "./globals.css";
 import React from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 
 const montserrat = Montserrat({
@@ -13,7 +14,13 @@ export const metadata: Metadata = {
     title: "Kurban Otomasyon Live Module",
     description: "Kurban Otomasyon Live Module",
     icons: {
-        icon: '/public/images/icon-144x144.png',
+        icon: [
+            {
+                url: '/images/favicon.png',
+                type: 'image/png',
+                sizes: '32x32',
+            }
+        ]
     },
     metadataBase: new URL('http://localhost:3000'),
 };
@@ -29,6 +36,7 @@ export default function RootLayout({
             className={`${montserrat.variable} antialiased`}
         >
         {children}
+        <Toaster/>
         </body>
         </html>
     );
