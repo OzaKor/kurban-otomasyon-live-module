@@ -17,10 +17,10 @@ interface CreateUserDto {
 async function fetchUsers(token?: string): Promise<User[]> {
   try {
     // With token
-    // const response = await axios.get<User[]>('/users', { token });
+    const response = await axios.get<User[]>('/users', { headers: { Authorization: `Bearer ${token}` } });
     
     // Without token
-    const response = await axios.get<User[]>('/users');
+    // const response = await axios.get<User[]>('/users');
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
