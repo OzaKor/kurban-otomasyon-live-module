@@ -3,7 +3,6 @@ import React from 'react';
 import Footer from "@/components/layout/Footer";
 import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'next/navigation';
-import { log } from 'console';
 
 interface AuthLayoutProps {
     children: React.ReactNode
