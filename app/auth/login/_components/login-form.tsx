@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,16 +36,19 @@ const LoginForm = () => {
   // Handle form submission
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
     try {
-
-      const response = await axios.post("/api/auth/login", {
-        email: values.email,
-        password: values.password,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        "/api/auth/login",
+        {
+          email: values.email,
+          password: values.password,
         },
-      });
-      
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       console.log("Login successful:", response);
       // Handle successful login (e.g., redirect, set user state, etc.)
       toast.success("Giriş Yapıldı", {
@@ -52,36 +56,36 @@ const LoginForm = () => {
         duration: 5000,
         icon: "✅",
         onAutoClose(toast) {
-            console.log("Toast auto closed", toast);
-            router.push("/");
+          console.log("Toast auto closed", toast);
+          router.push("/");
         },
       });
-      
-    } catch (error: any) {
-      console.error("Login error:", error);
-      
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error('Error data:', error.response.data);
-        console.error('Error status:', error.response.status);
-        console.error('Error headers:', error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('No response received:', error.request);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const axiosError = error as AxiosError;
+        console.error("Login error:", error);
+        
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error('Error data:', axiosError.response.data);
+          console.error('Error status:', axiosError.response.status);
+          console.error('Error headers:', axiosError.response.headers);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error('No response received:', axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error('Error message:', error.message);
+        }
       } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error('Error:', error.message);
+        console.error('An unknown error occurred');
       }
-
+    
       toast.error("Giriş Yapılırken Bir Hata Oluştu", {
         id: "login-error",
         duration: 1500,
         icon: "❌",
-        onAutoClose(toast) {
-            console.log("Toast auto closed", toast);
-            router.push("/auth/login");
-        },
       });
     }
   }
