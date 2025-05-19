@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +19,10 @@ import LoginSchema from "@/app/auth/schema/loginSchema";
 import axios from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/userStore";
 
 const LoginForm = () => {
+  const {setUser,setUserToken}=useUserStore();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -57,6 +59,8 @@ const LoginForm = () => {
         icon: "✅",
         onAutoClose(toast) {
           console.log("Toast auto closed", toast);
+          setUser(response.data.user);
+          setUserToken(response.data.token);
           router.push("/");
         },
       });

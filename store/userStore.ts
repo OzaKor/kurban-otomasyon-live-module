@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { User } from "@/types/user";
 
 interface UserStore {
-  userToken: string | null;
+  userToken: string;
   user: User | null;
   setUserToken: (userToken: string) => void;
   setUser: (user: User) => void;
@@ -12,7 +12,7 @@ interface UserStore {
 
 // Başlangıç değerleri
 const initialState = {
-  userToken: null,
+  userToken: "",
   user: null,
 };
 
