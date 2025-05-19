@@ -15,7 +15,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if we're on client side and user is authenticated
     if (typeof window !== 'undefined' && userToken) {
       router.push("/");
     } else {
@@ -23,7 +22,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     }
   }, [userToken, router]);
 
-  // Show loading state while checking auth status
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -32,7 +30,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     );
   }
 
-  // If user is authenticated, don't show auth pages
   if (userToken) {
     return null;
   }
