@@ -1,7 +1,6 @@
 import React from "react";
 import Breadcrumbs from "@/components/breadcrumbs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
 import Main from "./_components/main";
 
 const Home = () => {
@@ -18,11 +17,7 @@ const Home = () => {
         },
       ]} />
       <Card className="py-2">
-        <CardHeader className="p-0">
-          <CardTitle className="text-xl font-bold px-6 text-gray-800">Kesim Listesi</CardTitle>
-          <Separator />
-        </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4">
           <Main />
         </CardContent>
       </Card>
