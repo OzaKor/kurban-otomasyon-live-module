@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useUserStore } from "@/store/userStore";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";   
 import { Settings, } from "lucide-react";
 import Setting from "@/app/(routes)/(home)/_components/manager/setting";
@@ -13,7 +12,6 @@ interface AccordionItemProps {
 }
 
 const Manager = () => {
-    const { user } = useUserStore();
     
     const accordionItems:AccordionItemProps[] = [
         {
