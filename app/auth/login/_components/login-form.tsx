@@ -27,7 +27,6 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  // Initialize form
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -36,7 +35,6 @@ const LoginForm = () => {
     },
   });
 
-  // Handle form submission
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
     try {
       setIsLoading(true);
@@ -53,18 +51,17 @@ const LoginForm = () => {
         }
       );
 
-      // Handle successful login (e.g., redirect, set user state, etc.)
       toast.success("Giriş Yapıldı", {
         id: "login-success",
         duration: 1500,
         icon: "✅",
-        onAutoClose(toast) {
+        onAutoClose() {
           const token:string = response.data.token.split("|")[1];
           useUser.setUserToken(token);
           useUser.setUser({
-            id: response.data.user.id,
-            name: response.data.user.name,
-            role: response.data.user.role,
+            id: response.data.user.id || "",
+            name: response.data.user.name || "",
+            role: response.data.user.role || "",
           });
           router.push("/");
         },
@@ -75,16 +72,12 @@ const LoginForm = () => {
         console.error("Login error:", error);
         
         if (axiosError.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.error('Error data:', axiosError.response.data);
           console.error('Error status:', axiosError.response.status);
           console.error('Error headers:', axiosError.response.headers);
         } else if (axiosError.request) {
-          // The request was made but no response was received
           console.error('No response received:', axiosError.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.error('Error message:', error.message);
         }
       } else {

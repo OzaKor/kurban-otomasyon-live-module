@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import useUserStore from "@/store/useUserStore";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const url = `${apiUrl}/live-cut-settings`;
     const { userToken } = useUserStore.getState();
