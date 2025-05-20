@@ -1,19 +1,20 @@
 import { apiUrl } from "@/lib/axios";
 import { NextResponse } from "next/server";
 import axios from "axios";
-import useUserStore from "@/store/useUserStore";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const { userToken } = useUserStore.getState();
+    const authHeader = request.headers.get("Authorization");
 
-    if (!userToken) {
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
+    const token = authHeader.split(" ")[1];
+
     const response = await axios.get(`${apiUrl}/verify-token`, {
       headers: {
-        Authorization: `Bearer ${userToken}`,
+        Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },

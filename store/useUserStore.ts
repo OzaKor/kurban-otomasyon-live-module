@@ -1,7 +1,7 @@
 import { User } from "@/types/user";
 import axios from "@/lib/axios";
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 type UserStore = {
   userToken: string | null;
@@ -9,12 +9,11 @@ type UserStore = {
   setUserToken: (userToken: string) => void;
   setUser: (user: User) => void;
   clear: () => void;
-  fetchVerifyToken:  (token:string|null) => Promise<void>;
+  fetchVerifyToken: (token: string | null) => Promise<void>;
   logout: () => void;
-}
+};
 
-
-const useUserStore=create<UserStore>()(
+const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
       userToken: null,
@@ -22,13 +21,13 @@ const useUserStore=create<UserStore>()(
       setUserToken: (userToken: string) => set({ userToken }),
       setUser: (user: User) => set({ user }),
       clear: () => set({ userToken: null, user: null }),
-      fetchVerifyToken: async (token:string|null) => {
-        console.log("store fetchVerifyToken token: ", token);
-        if(!token){
+      fetchVerifyToken: async (token: string | null) => {
+        if (!token) {
           return;
         }
-        const response = await axios.get("/api/auth/verify-token",{
-          headers:{
+
+        const response = await axios.get("/api/auth/verify-token", {
+          headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -41,10 +40,10 @@ const useUserStore=create<UserStore>()(
       },
     }),
     {
-      name: 'user-session', // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
-    },
-  ),
-)
+      name: "user-session",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
 
-export default useUserStore
+export default useUserStore;

@@ -7,10 +7,9 @@ interface VerifyTokenProviderProps {
 }
 const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
     const {userToken, fetchVerifyToken } = useUserStore();
-console.log("VerifyTokenProvider userToken: ", userToken);
     useEffect(() => {
        fetchVerifyToken(userToken);
-    }, [fetchVerifyToken]);
+    }, [fetchVerifyToken,userToken]);
 
     return <>{children}</>;
 };
