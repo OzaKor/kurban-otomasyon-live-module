@@ -22,8 +22,8 @@ import { useRouter } from "next/navigation";
 import useUserStore from "@/store/useUserStore";
 
 const LoginForm = () => {
-  const [isLoading,setIsLoading]=useState(false);
-  const useUser=useUserStore()
+  const [isLoading, setIsLoading] = useState(false);
+  const useUser = useUserStore();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -56,8 +56,9 @@ const LoginForm = () => {
         duration: 1500,
         icon: "✅",
         onAutoClose() {
-          const token:string = response.data.token.split("|")[1];
-          useUser.setUserToken(token);
+          const token = response.data.token.split("|")[1];
+
+          useUser.setUserToken(`${token}`);
           useUser.setUser({
             id: response.data.user.id || "",
             name: response.data.user.name || "",
@@ -70,27 +71,26 @@ const LoginForm = () => {
       if (error instanceof Error) {
         const axiosError = error as AxiosError;
         console.error("Login error:", error);
-        
+
         if (axiosError.response) {
-          console.error('Error data:', axiosError.response.data);
-          console.error('Error status:', axiosError.response.status);
-          console.error('Error headers:', axiosError.response.headers);
+          console.error("Error data:", axiosError.response.data);
+          console.error("Error status:", axiosError.response.status);
+          console.error("Error headers:", axiosError.response.headers);
         } else if (axiosError.request) {
-          console.error('No response received:', axiosError.request);
+          console.error("No response received:", axiosError.request);
         } else {
-          console.error('Error message:', error.message);
+          console.error("Error message:", error.message);
         }
       } else {
-        console.error('An unknown error occurred');
+        console.error("An unknown error occurred");
       }
-    
+
       toast.error("Giriş Yapılırken Bir Hata Oluştu", {
         id: "login-error",
         duration: 1500,
         icon: "❌",
       });
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   }
@@ -149,11 +149,31 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2" disabled={isLoading}>
+        <Button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+          disabled={isLoading}
+        >
           {isLoading && (
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
           )}
           {isLoading ? "Giriş Yapılıyor..." : "Giriş Yap"}

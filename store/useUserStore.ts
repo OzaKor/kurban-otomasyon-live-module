@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 type UserStore = {
   userToken: string | null;
   user: User | null;
-  setUserToken: (userToken: string) => void;
+  setUserToken: (token: string) => void;
   setUser: (user: User) => void;
   clear: () => void;
   fetchVerifyToken: (token: string | null) => Promise<void>;
@@ -18,7 +18,7 @@ const useUserStore = create<UserStore>()(
     (set) => ({
       userToken: null,
       user: null,
-      setUserToken: (userToken: string) => set({ userToken }),
+      setUserToken: (token: string) => set({ userToken: token }),
       setUser: (user: User) => set({ user }),
       clear: () => set({ userToken: null, user: null }),
       fetchVerifyToken: async (token: string | null) => {
@@ -33,7 +33,6 @@ const useUserStore = create<UserStore>()(
             "Content-Type": "application/json",
           },
         });
-        set({ userToken: response.data.token });
       },
       logout: () => {
         set({ userToken: null, user: null });
