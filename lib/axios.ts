@@ -5,6 +5,8 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   token?: string;
 }
 
+export const apiUrl=process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 const axiosInstance: AxiosInstance = axios.create({
   timeout: 10000,
   headers: {

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { User } from "@/types/user";
+import axios from "@/lib/axios";
 
 interface UserStore {
   userToken: string | null;
@@ -8,6 +9,7 @@ interface UserStore {
   setUserToken: (userToken: string) => void;
   setUser: (user: User) => void;
   clear: () => void;
+  fetchVerifyToken: () => void;
 }
 
 // Başlangıç değerleri
@@ -23,6 +25,36 @@ export const useUserStore = create<UserStore>()(
       setUserToken: (userToken) => set({ userToken }),
       setUser: (user) => set({ user }),
       clear: () => set(initialState),
+      fetchVerifyToken: () => {
+        console.log("fetchVerifyToken");
+
+        const storedData = localStorage.getItem("user-storage");
+        const parsedData = storedData ? JSON.parse(storedData) : null;
+        const userToken = parsedData?.state?.userToken;
+
+        if (userToken) {
+          axios
+            .get(`api/auth/verify-token`, {
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+              },
+            })
+            .then(() => {
+              // Token geçerli, herhangi bir işlem yapmaya gerek yok
+              console.log("Token geçerli");
+            })
+            .catch((error) => {
+              if (error.response?.status === 401) {
+                // 401 Unauthorized hatası durumunda kullanıcıyı çıkış yaptır
+                useUserStore.getState().clear();
+              }
+
+              console.error("Token doğrulama hatası:", error);
+            });
+        }
+      },
     }),
     {
       name: "user-storage", // localStorage'ta kullanılacak key

@@ -1,10 +1,10 @@
 
-import axios from "@/lib/axios";
+import axios, { apiUrl } from "@/lib/axios";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
      const loginUrl =
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/login` ||
+    `${apiUrl}/auth/login` ||
     "http://localhost:8000/api/v1/auth/login";
 try {
   console.log("loginUrl: ", loginUrl);
