@@ -19,15 +19,14 @@ import LoginSchema from "@/app/auth/schema/loginSchema";
 import axios from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/userStore";
+import useUserStore from "@/store/useUserStore";
 
 const LoginForm = () => {
-  const [isLoading,setIsLoading]=useState(false);
-  const {setUser,setUserToken}=useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const useUser = useUserStore();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  // Initialize form
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -36,7 +35,6 @@ const LoginForm = () => {
     },
   });
 
-  // Handle form submission
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
     try {
       setIsLoading(true);
@@ -53,16 +51,19 @@ const LoginForm = () => {
         }
       );
 
-      console.log("Login successful:", response);
-      // Handle successful login (e.g., redirect, set user state, etc.)
       toast.success("Giriş Yapıldı", {
         id: "login-success",
         duration: 1500,
         icon: "✅",
-        onAutoClose(toast) {
-          console.log("Toast auto closed", toast);
-          setUser(response.data.user);
-          setUserToken(response.data.token);
+        onAutoClose() {
+          const token = response.data.token.split("|")[1];
+
+          useUser.setUserToken(`${token}`);
+          useUser.setUser({
+            id: response.data.user.id || "",
+            name: response.data.user.name || "",
+            role: response.data.user.role || "",
+          });
           router.push("/");
         },
       });
@@ -70,31 +71,26 @@ const LoginForm = () => {
       if (error instanceof Error) {
         const axiosError = error as AxiosError;
         console.error("Login error:", error);
-        
+
         if (axiosError.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.error('Error data:', axiosError.response.data);
-          console.error('Error status:', axiosError.response.status);
-          console.error('Error headers:', axiosError.response.headers);
+          console.error("Error data:", axiosError.response.data);
+          console.error("Error status:", axiosError.response.status);
+          console.error("Error headers:", axiosError.response.headers);
         } else if (axiosError.request) {
-          // The request was made but no response was received
-          console.error('No response received:', axiosError.request);
+          console.error("No response received:", axiosError.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
-          console.error('Error message:', error.message);
+          console.error("Error message:", error.message);
         }
       } else {
-        console.error('An unknown error occurred');
+        console.error("An unknown error occurred");
       }
-    
+
       toast.error("Giriş Yapılırken Bir Hata Oluştu", {
         id: "login-error",
         duration: 1500,
         icon: "❌",
       });
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   }
@@ -153,11 +149,31 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2" disabled={isLoading}>
+        <Button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+          disabled={isLoading}
+        >
           {isLoading && (
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
           )}
           {isLoading ? "Giriş Yapılıyor..." : "Giriş Yap"}
