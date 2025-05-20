@@ -22,7 +22,10 @@ export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
       ...initialState,
-      setUserToken: (userToken) => set({ userToken }),
+      setUserToken: (userToken) => {
+        const token = userToken.split("|")[1];
+        set({ userToken: token });
+      },
       setUser: (user) => set({ user }),
       clear: () => set(initialState),
       fetchVerifyToken: () => {
@@ -38,7 +41,7 @@ export const useUserStore = create<UserStore>()(
               headers: {
                 Authorization: `Bearer ${userToken}`,
                 "Content-Type": "application/json",
-                "Accept": "application/json",
+                Accept: "application/json",
               },
             })
             .then(() => {
@@ -46,7 +49,6 @@ export const useUserStore = create<UserStore>()(
               console.log("Token geçerli");
             })
             .catch((error) => {
-              
               if (error.response?.status === 401) {
                 // 401 Unauthorized hatası durumunda kullanıcıyı çıkış yaptır
                 useUserStore.getState().clear();
