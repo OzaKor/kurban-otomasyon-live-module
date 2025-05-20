@@ -9,7 +9,7 @@ type UserStore = {
   setUserToken: (userToken: string) => void;
   setUser: (user: User) => void;
   clear: () => void;
-  fetchVerifyToken:  () => Promise<void>;
+  fetchVerifyToken:  (token:string|null) => Promise<void>;
   logout: () => void;
 }
 
@@ -22,8 +22,18 @@ const useUserStore=create<UserStore>()(
       setUserToken: (userToken: string) => set({ userToken }),
       setUser: (user: User) => set({ user }),
       clear: () => set({ userToken: null, user: null }),
-      fetchVerifyToken: async () => {
-        const response = await axios.get("/api/verify-token");
+      fetchVerifyToken: async (token:string|null) => {
+        console.log("store fetchVerifyToken token: ", token);
+        if(!token){
+          return;
+        }
+        const response = await axios.get("/api/auth/verify-token",{
+          headers:{
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
         set({ userToken: response.data.token });
       },
       logout: () => {

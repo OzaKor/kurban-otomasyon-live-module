@@ -23,7 +23,7 @@ import useUserStore from "@/store/useUserStore";
 
 const LoginForm = () => {
   const [isLoading,setIsLoading]=useState(false);
-  const {setUser,setUserToken}=useUserStore();
+  const useUser=useUserStore()
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -53,16 +53,19 @@ const LoginForm = () => {
         }
       );
 
-      console.log("Login successful:", response);
       // Handle successful login (e.g., redirect, set user state, etc.)
       toast.success("Giriş Yapıldı", {
         id: "login-success",
         duration: 1500,
         icon: "✅",
         onAutoClose(toast) {
-          console.log("Toast auto closed", toast);
-          setUser(response.data.user);
-          setUserToken(response.data.token);
+          const token:string = response.data.token.split("|")[1];
+          useUser.setUserToken(token);
+          useUser.setUser({
+            id: response.data.user.id,
+            name: response.data.user.name,
+            role: response.data.user.role,
+          });
           router.push("/");
         },
       });

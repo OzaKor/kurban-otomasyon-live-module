@@ -15,7 +15,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && userToken) {
+    if (typeof window !== "undefined" && userToken) {
       router.push("/");
     } else {
       setIsLoading(false);
@@ -37,9 +37,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto px-4 py-6">
-        <div className="max-w-md mx-auto">
-          {children}
-        </div>
+        <div className="max-w-md mx-auto">{children}</div>
       </main>
       <Footer />
     </div>

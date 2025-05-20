@@ -6,10 +6,10 @@ interface VerifyTokenProviderProps {
     children: React.ReactNode;
 }
 const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
-    const { fetchVerifyToken } = useUserStore();
-
+    const {userToken, fetchVerifyToken } = useUserStore();
+console.log("VerifyTokenProvider userToken: ", userToken);
     useEffect(() => {
-       fetchVerifyToken();
+       fetchVerifyToken(userToken);
     }, [fetchVerifyToken]);
 
     return <>{children}</>;
