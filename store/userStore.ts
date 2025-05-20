@@ -46,8 +46,19 @@ export const useUserStore = create<UserStore>()(
               console.log("Token geçerli");
             })
             .catch((error) => {
+              
               if (error.response?.status === 401) {
                 // 401 Unauthorized hatası durumunda kullanıcıyı çıkış yaptır
+                useUserStore.getState().clear();
+              }
+
+              if (error.response?.status === 403) {
+                // 403 Forbidden hatası durumunda kullanıcıyı çıkış yaptır
+                useUserStore.getState().clear();
+              }
+
+              if (error.response?.status === 500) {
+                // 500 Internal Server Error hatası durumunda kullanıcıyı çıkış yaptır
                 useUserStore.getState().clear();
               }
 
