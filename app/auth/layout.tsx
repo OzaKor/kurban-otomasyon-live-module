@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Footer from "@/components/layout/Footer";
-import { useUserStore } from "@/store/userStore";
+import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 

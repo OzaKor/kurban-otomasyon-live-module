@@ -1,7 +1,7 @@
 import { apiUrl } from "@/lib/axios";
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { useUserStore } from "@/store/userStore";
+import useUserStore from "@/store/useUserStore";
 
 export async function GET(request: Request) {
   try {

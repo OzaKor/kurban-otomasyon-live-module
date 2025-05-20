@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "@/lib/axios";
-import { useUserStore } from "./userStore";
+import useUserStore from "./useUserStore";
 
 export type CutSettingStoreType = {
   proccessStart: boolean;

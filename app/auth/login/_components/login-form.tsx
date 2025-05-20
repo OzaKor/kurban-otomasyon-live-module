@@ -19,7 +19,7 @@ import LoginSchema from "@/app/auth/schema/loginSchema";
 import axios from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/userStore";
+import useUserStore from "@/store/useUserStore";
 
 const LoginForm = () => {
   const [isLoading,setIsLoading]=useState(false);

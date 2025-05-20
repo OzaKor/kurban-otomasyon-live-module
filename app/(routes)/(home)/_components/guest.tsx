@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useUserStore } from "@/store/userStore";
+import useUserStore from "@/store/useUserStore";
 
 const Guest = () => {
     const {user}=useUserStore();
