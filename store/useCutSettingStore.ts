@@ -22,7 +22,7 @@ const initialState: CutSettingStoreType = {
   processStop: false,
 };
 
-export const useCutSettingStore = create<CutSettingStore>()((set) => ({
+const useCutSettingStore = create<CutSettingStore>()((set) => ({
   state: initialState,
   setState: (state: CutSettingStoreType) => set({ state }),
   fetchCutSetting: async () => {
@@ -43,3 +43,5 @@ export const useCutSettingStore = create<CutSettingStore>()((set) => ({
   },
   clear: () => set({ state: initialState }),
 }));
+
+export default useCutSettingStore;
