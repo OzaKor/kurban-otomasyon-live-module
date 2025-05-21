@@ -5,7 +5,7 @@ const CutInfo = () => {
         <div className="flex flex-col min-h-screen bg-gray-100">
             {/* Üst Logo Alanı */}
             <div className="bg-white p-4 flex flex-col items-center justify-center">
-                <Logo className="h-28 mb-4"/>
+                <Logo className="h-28 mb-4" alt="Kurban Kesim Logo"/>
                 <h1 className="text-2xl font-bold text-green-700 text-center">Kurban Kesim Kuralları</h1>
                 <div className="text-gray-500 mt-2">
                     <CurrentTime />
@@ -90,7 +90,7 @@ const CutInfo = () => {
 
             {/* Alt Logo Alanı */}
             <div className="bg-white mt-auto p-4 flex justify-center items-center">
-                <Logo className='h-20'/>
+                <Logo className='h-20' alt="Kurban Kesim Logo"/>
             </div>
         </div>
     )

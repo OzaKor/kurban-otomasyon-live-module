@@ -3,6 +3,7 @@ import React from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";   
 import { Settings, } from "lucide-react";
 import Setting from "@/app/(routes)/(home)/_components/manager/setting";
+import CutInfo from "../cut-info";
 
 interface AccordionItemProps {
     id: string;
@@ -49,6 +50,7 @@ const Manager = () => {
                     </AccordionItem>
                 ))}
             </Accordion>
+           <div className="mt-6"><CutInfo /></div>
         </div>
     );
 };

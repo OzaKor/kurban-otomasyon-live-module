@@ -6,14 +6,15 @@ interface LogoProps {
     width?: number;
     height?: number;
     className?: string;
+    alt?: string;
 }
 
-const Logo = ({ width, height, className }: LogoProps) => {
+const Logo = ({ width, height, className, alt }: LogoProps) => {
     return (
         <div className="flex items-center space-x-1 shrink-0">
             <Image
                 src="/images/logo.png"
-                alt="Logo"
+                alt={alt || "Logo"}
                 sizes="(max-width: 48px)"
                 className={cn("rounded-full object-contain w-full h-14", className)}
                 priority
