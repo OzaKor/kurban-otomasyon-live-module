@@ -1,119 +1,124 @@
 "use client";
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+ 
+const invoices = [
+  {
+    index: 1,
+    patoc: "Patoc 1",
+    time: "10:00",
+    type: "Kesim",
+    action: "Düzenle",
+  },
+  {
+    index: 2,
+    patoc: "Patoc 2",
+    time: "10:00",
+    type: "Kesim",
+    action: "Düzenle",
+  },
+  {
+    index: 3,
+    patoc: "Patoc 3",
+    time: "10:00",
+    type: "Kesim",
+    action: "Düzenle",
+  }  
+]
 
-interface Invoice {
-  index: number;
-  patoc: string;
-  time: string;
-  type: string;
-  status: string;
-}
-
-interface Heading {
-  title: string;
-  key: string;
-  className?: string;
-}
+const headings=[
+  {
+    title:"Kesim Sırası",
+    key:"index",
+    className:"w-[150px]"
+  },
+  {
+    title:"Patok",
+    key:"patoc",
+    className:"w-[200px]"
+  },
+  {
+    title:"Kesim Zamanı",
+    key:"time",
+    className:"w-[200px]"
+  },
+  {
+    title:"Tipi",
+    key:"type",
+    className:"w-[200px]"
+  },
+  {
+    title:"İşlem",
+    key:"action",
+    className:"w-[150px] text-right"
+  }
+]
 
 const CutTable = () => {
-  const invoices: Invoice[] = [
-    {
-      index: 1,
-      patoc: "Patoc 1",
-      time: "10:00",
-      type: "Kesim",
-      status: "bekliyor",
-    },
-    {
-      index: 2,
-      patoc: "Patoc 2",
-      time: "10:00",
-      type: "Kesim",
-      status: "bekliyor",
-    },
-    {
-      index: 3,
-      patoc: "Patoc 3",
-      time: "10:00",
-      type: "Kesim",
-      status: "bekliyor",
-    },
-  ];
-
-  const headings: Heading[] = [
-    {
-      title: "Kesim Sırası",
-      key: "index",
-      className: "w-32",
-    },
-    {
-      title: "Patok",
-      key: "patoc",
-    },
-    {
-      title: "Kesim Zamanı",
-      key: "time",
-    },
-    {
-      title: "Tipi",
-      key: "type",
-    },
-    {
-      title: "İşlem",
-      key: "action",
-      className: "text-right",
-    },
-  ];
-
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-green-700 text-white">
+    <div className="p-8">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow className="bg-green-700 hover:bg-green-700 border-b-0">
               {headings.map((heading) => (
-                <th
-                  key={heading.key}
-                  className={`py-2 px-4 text-left font-medium ${
-                    heading.className || ""
-                  }`
-                }
-                
+                <TableHead 
+                  key={heading.key} 
+                  className={`text-white py-4 px-5 text-base font-medium ${heading.className || ''}`}
                 >
                   {heading.title}
-                </th>
+                </TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {invoices.map((invoice) => (
-              <tr
+              <TableRow 
                 key={invoice.index}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
-                <td className="py-3 px-6 font-medium">{invoice.index}</td>
-                <td className="py-3 px-6">{invoice.patoc}</td>
-                <td className="py-3 px-6">{invoice.time}</td>
-                <td className="py-3 px-6">{invoice.type}</td>
-                <td className="py-3 px-6 text-right">
-                  <button className="text-green-600 hover:text-green-700 font-medium">
-                    Düzenle
-                  </button>
-                </td>
-              </tr>
+                <TableCell className="font-medium py-4 px-5 text-base">
+                  <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
+                    {invoice.index}
+                  </div>
+                </TableCell>
+                <TableCell className="py-4 px-5 text-base">{invoice.patoc}</TableCell>
+                <TableCell className="py-4 px-5 text-base">{invoice.time}</TableCell>
+                <TableCell className="py-4 px-5 text-base">{invoice.type}</TableCell>
+                <TableCell className="text-right py-4 px-5">
+                  <Button 
+                    variant="ghost" 
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50 font-medium text-base px-3 py-1"
+                  >
+                    {invoice.action}
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-          <tfoot>
-            <tr className="bg-gray-100">
-              <td colSpan={4} className="py-3 px-6 font-medium">
+          </TableBody>
+          <TableFooter>
+            <TableRow className="bg-gray-100 hover:bg-gray-100 border-t">
+              <TableCell colSpan={4} className="py-4 px-5 font-medium text-base">
                 Toplam Kesilecek Hayvan Sayısı
-              </td>
-              <td className="py-3 px-6 text-right font-bold">
-                {invoices.length}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+              </TableCell>
+              <TableCell className="text-right py-4 px-5">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-700 text-white rounded-full font-bold text-lg">
+                  {invoices.length}
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
       </div>
     </div>
   );
