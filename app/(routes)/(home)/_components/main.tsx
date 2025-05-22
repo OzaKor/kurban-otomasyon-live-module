@@ -37,7 +37,7 @@ const Main = () => {
   return (
     <>
       {user && user.role === "super_admin" && <Manager />}
-      {user && user.role !=="super_admin" && <Guest />}
+      {(!user || user.role !== "super_admin") && <Guest />}
       {JSON.stringify(state, null, 2)}
     </>
   );
