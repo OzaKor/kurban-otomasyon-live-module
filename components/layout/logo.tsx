@@ -1,17 +1,25 @@
 import React from 'react';
 import Image from "next/image";
+import { cn } from '@/lib/utils';
 
-const Logo = () => {
+interface LogoProps {
+    width?: number;
+    height?: number;
+    className?: string;
+    alt?: string;
+}
+
+const Logo = ({ width, height, className, alt }: LogoProps) => {
     return (
         <div className="flex items-center space-x-1 shrink-0">
             <Image
                 src="/images/logo.png"
-                alt="Logo"
+                alt={alt || "Logo"}
                 sizes="(max-width: 48px)"
-                className="rounded-full object-contain w-full h-14"
+                className={cn("rounded-full object-contain w-full h-14", className)}
                 priority
-                width={1600}
-                height={455}
+                width={width || 1600}
+                height={height || 455}
             />
         </div>
     );

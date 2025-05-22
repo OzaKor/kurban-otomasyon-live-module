@@ -1,13 +1,7 @@
 import { create } from "zustand";
 import axios from "@/lib/axios";
-import useUserStore from "./useUserStore";
+import { CutSettingStoreType } from "@/types/cut-setting";
 
-export type CutSettingStoreType = {
-  proccessStart: boolean;
-  proccessEnd: boolean;
-  processContiune: boolean;
-  processStop: boolean;
-};
 interface CutSettingStore {
   state: CutSettingStoreType;
   setState: (state: CutSettingStoreType) => void;
@@ -22,24 +16,23 @@ const initialState: CutSettingStoreType = {
   processStop: false,
 };
 
-export const useCutSettingStore = create<CutSettingStore>()((set) => ({
+const useCutSettingStore = create<CutSettingStore>()((set) => ({
   state: initialState,
   setState: (state: CutSettingStoreType) => set({ state }),
   fetchCutSetting: async () => {
-    const { userToken } = useUserStore.getState();
-    if (!userToken) {
-      return;
-    }
     const response = await axios.get("/api/cut-settings");
-    console.log("setting response: ", response);
+    const process = await response.data;
+
     set({
       state: {
-        proccessStart: response.data.proccessStart,
-        proccessEnd: response.data.proccessEnd,
-        processContiune: response.data.processContiune,
-        processStop: response.data.processStop,
+        proccessStart: process.process_start,
+        proccessEnd: process.process_end,
+        processContiune: process.process_continue,
+        processStop: process.process_stop,
       },
     });
   },
   clear: () => set({ state: initialState }),
 }));
+
+export default useCutSettingStore;
