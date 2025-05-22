@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import LoginSchema from "@/app/auth/schema/loginSchema";
 import axios from "@/lib/axios";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/useUserStore";
+import showToast from "@/lib/showToast";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,21 +51,16 @@ const LoginForm = () => {
         }
       );
 
-      toast.success("Giriş Yapıldı", {
-        id: "login-success",
-        duration: 1500,
-        icon: "✅",
-        onAutoClose() {
-          const token = response.data.token.split("|")[1];
+      const token =  response.data.token.split("|")[1];
+      useUser.setUserToken(`${token}`);
+      useUser.setUser({
+        id: response.data.user.id || "",
+        name: response.data.user.name || "",
+        role: response.data.user.role || "",
+      });
 
-          useUser.setUserToken(`${token}`);
-          useUser.setUser({
-            id: response.data.user.id || "",
-            name: response.data.user.name || "",
-            role: response.data.user.role || "",
-          });
-          router.push("/");
-        },
+      showToast("login-success","Giriş Yapıldı","success",undefined,undefined,"top-right",()=>{
+        router.push("/");
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -85,15 +80,14 @@ const LoginForm = () => {
         console.error("An unknown error occurred");
       }
 
-      toast.error("Giriş Yapılırken Bir Hata Oluştu", {
-        id: "login-error",
-        duration: 1500,
-        icon: "❌",
+      showToast("login-error","Giriş Yapılırken Bir Hata Oluştu","error",undefined,undefined,"top-right",()=>{
+        console.log("Giriş Yapılırken Bir Hata Oluştu");
       });
     } finally {
       setIsLoading(false);
     }
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

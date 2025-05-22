@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="tr">
       <body className={`${montserrat.variable} antialiased`}>
         <VerifyTokenProvider>{children}</VerifyTokenProvider>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );

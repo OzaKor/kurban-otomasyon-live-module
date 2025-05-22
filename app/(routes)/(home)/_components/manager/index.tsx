@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Settings } from "lucide-react";
-import Setting from "@/app/(routes)/(home)/_components/manager/setting";
+import Setting from "@/app/(routes)/(home)/_components/cut/setting";
 import Cut from "@/app/(routes)/(home)/_components/cut";
 
 interface AccordionItemProps {
@@ -47,7 +47,7 @@ const Manager = () => {
                 <span className="font-medium text-gray-800">{item.title}</span>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-5 py-4 text-gray-600 bg-gray-50">
+            <AccordionContent className="px-5 py-4 text-gray-600">
               {item.content}
             </AccordionContent>
           </AccordionItem>

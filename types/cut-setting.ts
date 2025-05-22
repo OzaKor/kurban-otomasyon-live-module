@@ -1,4 +1,4 @@
-export type CutSettingStoreType = {
+export interface cutSettingInterface {
   proccessStart: boolean;
   proccessEnd: boolean;
   processContiune: boolean;

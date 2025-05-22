@@ -32,7 +32,7 @@ const Main = () => {
         clearInterval(settingSetInterval.current);
       }
     };
-  }, [fetchData]);
+  }, [fetchData,user?.role]);
 
   return (
     <>
