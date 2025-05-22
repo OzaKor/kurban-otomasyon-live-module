@@ -40,27 +40,27 @@ const headings=[
   {
     title:"Kesim Sırası",
     key:"index",
-    className:"w-[150px]"
+    className:"w-[100px]"
   },
   {
     title:"Patok",
     key:"patoc",
-    className:"w-[200px]"
+    className:"w-[100px]"
   },
   {
     title:"Kesim Zamanı",
     key:"time",
-    className:"w-[200px]"
+    className:"w-[100px]"
   },
   {
     title:"Tipi",
     key:"type",
-    className:"w-[200px]"
+    className:"w-[100px]"
   },
   {
     title:"İşlem",
     key:"action",
-    className:"w-[150px] text-right"
+    className:"w-[100px] text-right pr-10"
   }
 ]
 
@@ -98,7 +98,7 @@ const CutTable = () => {
                 <TableCell className="text-right py-4 px-5">
                   <Button 
                     variant="ghost" 
-                    className="text-green-600 hover:text-green-700 hover:bg-green-50 font-medium text-base px-3 py-1"
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50 font-medium text-base px-3 py-1 hover:cursor-pointer"
                   >
                     {invoice.action}
                   </Button>
