@@ -8,17 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Play, RefreshCw, Pause, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { cutSettingInterface } from "@/types/cut-setting";
+import axios from "axios";
+import useUserStore from "@/store/useUserStore";
 const Setting = () => {
+  const { userToken } = useUserStore();
   const { state, setState } = useCutSettingStore();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleProcessCut = (key: keyof cutSettingInterface) => {
-    setLoading(true);
+  const setUpdate=(key:string)=>{
     setState((prev) => {
       switch (key) {
-        case "proccessStart":
+        case "start":
           return {
             ...prev,
             proccessStart: false,
@@ -27,7 +28,7 @@ const Setting = () => {
             processStop: true,
           };
 
-        case "proccessEnd":
+        case "end":
           return {
             ...prev,
             proccessStart: true,
@@ -36,7 +37,7 @@ const Setting = () => {
             processStop: false,
           };
 
-        case "processStop":
+        case "stop":
           return {
             ...prev,
             proccessStart: false,
@@ -45,7 +46,7 @@ const Setting = () => {
             processStop: false,
           };
 
-        case "processContiune":
+        case "contiune":
           return {
             ...prev,
             proccessStart: false,
@@ -53,13 +54,34 @@ const Setting = () => {
             processContiune: false,
             processStop: true,
           };
-          
+
         default:
           return prev;
       }
     });
+  }
+  const handleProcessCut = (key: string) => {
+    setLoading(true);
+    
+    setUpdate(key);
 
-    setLoading(false);
+    const data = {
+      message,
+      key,
+    };
+    axios.put(`/api/cut-settings`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    }).then(()=>{
+      
+    }).catch((error)=>{
+      console.error("Kesim ayarları hatası: ", error);
+    }).finally(()=>{
+      setLoading(false);
+    });
   };
 
   return (
@@ -86,7 +108,7 @@ const Setting = () => {
               "flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
               loading && "cursor-not-allowed opacity-70"
             )}
-            onClick={() => handleProcessCut("proccessStart")}
+            onClick={() => handleProcessCut("start")}
             disabled={loading}
           >
             <Play className={cn("size-5", loading && "animate-pulse")} />
@@ -99,7 +121,7 @@ const Setting = () => {
               "flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
               loading && "cursor-not-allowed opacity-70"
             )}
-            onClick={() => handleProcessCut("processContiune")}
+            onClick={() => handleProcessCut("contiune")}
             disabled={loading}
           >
             <RefreshCw className={cn("size-5", loading && "animate-pulse")} />
@@ -112,7 +134,7 @@ const Setting = () => {
               "flex items-center justify-center gap-3 w-full bg-yellow-600 hover:bg-yellow-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
               loading && "cursor-not-allowed opacity-70"
             )}
-            onClick={() => handleProcessCut("processStop")}
+            onClick={() => handleProcessCut("stop")}
             disabled={loading}
           >
             <Pause className={cn("size-5", loading && "animate-pulse")} />
@@ -125,7 +147,7 @@ const Setting = () => {
               "flex items-center justify-center gap-3 w-full bg-red-600 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
               loading && "cursor-not-allowed opacity-70"
             )}
-            onClick={() => handleProcessCut("proccessEnd")}
+            onClick={() => handleProcessCut("end")}
             disabled={loading}
           >
             <CheckCircle className={cn("size-5", loading && "animate-pulse")} />
