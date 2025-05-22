@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import axios from "@/lib/axios";
-import useUserStore from "./useUserStore";
 
 export type CutSettingStoreType = {
   proccessStart: boolean;
@@ -26,20 +25,19 @@ const useCutSettingStore = create<CutSettingStore>()((set) => ({
   state: initialState,
   setState: (state: CutSettingStoreType) => set({ state }),
   fetchCutSetting: async () => {
-    const { userToken } = useUserStore.getState();
-    if (!userToken) {
-      return;
-    }
+
     const response = await axios.get("/api/cut-settings");
-    console.log("setting response: ", response);
+    const process= await response.data;   
+    
     set({
       state: {
-        proccessStart: response.data.proccessStart,
-        proccessEnd: response.data.proccessEnd,
-        processContiune: response.data.processContiune,
-        processStop: response.data.processStop,
+        proccessStart: process.process_start,
+        proccessEnd: process.process_end,
+        processContiune: process.process_continue,
+        processStop: process.process_stop,
       },
     });
+    
   },
   clear: () => set({ state: initialState }),
 }));
