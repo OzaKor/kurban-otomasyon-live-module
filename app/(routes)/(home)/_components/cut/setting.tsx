@@ -5,18 +5,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import useCutSettingStore from "@/store/useCutSettingStore";
 import { Button } from "@/components/ui/button";
-import { Play, RefreshCw, Pause, CheckCircle } from "lucide-react";
+import { Play, RefreshCw, Pause, CheckCircle, BadgeCheck, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import useUserStore from "@/store/useUserStore";
+import useToast from "@/hooks/useToast";
+
 const Setting = () => {
   const { userToken } = useUserStore();
   const { state, setState } = useCutSettingStore();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const setUpdate=(key:string)=>{
+  const setUpdate = (key: string) => {
     setState((prev) => {
       switch (key) {
         case "start":
@@ -59,29 +61,38 @@ const Setting = () => {
           return prev;
       }
     });
-  }
+  };
   const handleProcessCut = (key: string) => {
     setLoading(true);
-    
+
     setUpdate(key);
 
     const data = {
       message,
       key,
     };
-    axios.put(`/api/cut-settings`, data, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${userToken}`,
-      },
-    }).then(()=>{
-      
-    }).catch((error)=>{
-      console.error("Kesim ayarları hatası: ", error);
-    }).finally(()=>{
-      setLoading(false);
-    });
+    axios
+      .put(`/api/cut-settings`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      })
+      .then(() => {
+        useToast("success","Kesim ayarları güncellendi","success",undefined,undefined,"top-right",()=>{
+          console.log("Kesim ayarları güncellendi");
+        });
+      })
+      .catch((error) => {
+        console.error("Kesim ayarları hatası: ", error);
+        useToast("error", "Kesim ayarları güncellenemedi","error",undefined,undefined,"top-right",()=>{
+          console.log("Kesim ayarları güncellenemedi: ",error);
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
