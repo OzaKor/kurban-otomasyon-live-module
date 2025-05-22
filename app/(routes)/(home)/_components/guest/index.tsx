@@ -1,13 +1,8 @@
 "use client";
 import React from "react";
-import CutInfo from "@/app/(routes)/(home)/_components/cut-info";
+import Cut from "@/app/(routes)/(home)/_components/cut";
 const Guest = () => {
-    
-    return (
-        <>
-        <CutInfo />      
-        </>
-    );
+  return <Cut />;
 };
 
 export default Guest;
