@@ -32,13 +32,12 @@ const Main = () => {
         clearInterval(settingSetInterval.current);
       }
     };
-  }, [fetchData,user?.role]);
+  }, [fetchData, user?.role]);
 
   return (
     <>
       {user && user.role === "super_admin" && <Manager />}
       {(!user || user.role !== "super_admin") && <Guest />}
-      {JSON.stringify(state, null, 2)}
     </>
   );
 };
