@@ -1,15 +1,15 @@
 import { create } from "zustand";
 import axios from "@/lib/axios";
-import { CutSettingStoreType } from "@/types/cut-setting";
+import { cutSettingInterface } from "@/types/cut-setting";
 
 interface CutSettingStore {
-  state: CutSettingStoreType;
-  setState: (state: CutSettingStoreType) => void;
+  state: cutSettingInterface;
+  setState: (state: cutSettingInterface | ((prev: cutSettingInterface) => cutSettingInterface)) => void;
   fetchCutSetting: () => Promise<void>;
   clear: () => void;
 }
 
-const initialState: CutSettingStoreType = {
+const initialState: cutSettingInterface = {
   proccessStart: false,
   proccessEnd: false,
   processContiune: false,
@@ -18,8 +18,10 @@ const initialState: CutSettingStoreType = {
 
 const useCutSettingStore = create<CutSettingStore>()((set) => ({
   state: initialState,
-  setState: (state: CutSettingStoreType) => set({ state }),
-  fetchCutSetting: async () => {
+  setState: (state) => set((store) => ({
+    state: typeof state === 'function' ? state(store.state) : state
+  })),
+    fetchCutSetting: async () => {
     const response = await axios.get("/api/cut-settings");
     const process = await response.data;
 
