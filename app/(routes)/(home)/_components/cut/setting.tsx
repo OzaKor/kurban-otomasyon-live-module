@@ -5,12 +5,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import useCutSettingStore from "@/store/useCutSettingStore";
 import { Button } from "@/components/ui/button";
-import { Play, RefreshCw, Pause, CheckCircle, BadgeCheck, X } from "lucide-react";
+import { Play, RefreshCw, Pause, CheckCircle} from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import useUserStore from "@/store/useUserStore";
-import useToast from "@/hooks/useToast";
+import showToast from "@/lib/showToast";
 
 const Setting = () => {
   const { userToken } = useUserStore();
@@ -80,13 +80,13 @@ const Setting = () => {
         },
       })
       .then(() => {
-        useToast("success","Kesim ayarları güncellendi","success",undefined,undefined,"top-right",()=>{
+        showToast("success","Kesim ayarları güncellendi","success",undefined,undefined,"top-right",()=>{
           console.log("Kesim ayarları güncellendi");
         });
       })
       .catch((error) => {
         console.error("Kesim ayarları hatası: ", error);
-        useToast("error", "Kesim ayarları güncellenemedi","error",undefined,undefined,"top-right",()=>{
+        showToast("error", "Kesim ayarları güncellenemedi","error",undefined,undefined,"top-right",()=>{
           console.log("Kesim ayarları güncellenemedi: ",error);
         });
       })

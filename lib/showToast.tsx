@@ -1,7 +1,8 @@
+"use client";
 import { BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 
-const useToast = (
+const showToast = (
   id: string,
   message: string,
   action: "success" | "error" | "warning" | "info",
@@ -31,4 +32,4 @@ const useToast = (
   });
 };
 
-export default useToast;
+export default showToast;
