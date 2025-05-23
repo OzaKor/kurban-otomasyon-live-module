@@ -3,7 +3,6 @@ import React from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -11,8 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import CutList from "@/types/cut-list"
  
-const invoices = [
+const cutLists:CutList[] = [
   {
     index: 1,
     patoc: "Patoc 1",
@@ -82,25 +82,25 @@ const CutTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoices.map((invoice) => (
+            {cutLists.map((cutList) => (
               <TableRow 
-                key={invoice.index}
+                key={cutList.index}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <TableCell className="font-medium py-4 px-5 text-base">
                   <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
-                    {invoice.index}
+                    {cutList.index}
                   </div>
                 </TableCell>
-                <TableCell className="py-4 px-5 text-base">{invoice.patoc}</TableCell>
-                <TableCell className="py-4 px-5 text-base">{invoice.time}</TableCell>
-                <TableCell className="py-4 px-5 text-base">{invoice.type}</TableCell>
+                <TableCell className="py-4 px-5 text-base">{cutList.patoc}</TableCell>
+                <TableCell className="py-4 px-5 text-base">{cutList.time}</TableCell>
+                <TableCell className="py-4 px-5 text-base">{cutList.type}</TableCell>
                 <TableCell className="text-right py-4 px-5">
                   <Button 
                     variant="ghost" 
                     className="text-green-600 hover:text-green-700 hover:bg-green-50 font-medium text-base px-3 py-1 hover:cursor-pointer"
                   >
-                    {invoice.action}
+                    {cutList.action}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -113,7 +113,7 @@ const CutTable = () => {
               </TableCell>
               <TableCell className="text-right py-4 px-5">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-700 text-white rounded-full font-bold text-lg">
-                  {invoices.length}
+                  {cutLists.length}
                 </div>
               </TableCell>
             </TableRow>
