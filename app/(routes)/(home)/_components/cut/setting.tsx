@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import useCutSettingStore from "@/store/useCutSettingStore";
+import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 import { Button } from "@/components/ui/button";
 import { Play, RefreshCw, Pause, CheckCircle} from "lucide-react";
 import { motion } from "framer-motion";
@@ -72,7 +72,7 @@ const Setting = () => {
       key,
     };
     axios
-      .put(`/api/cut-settings`, data, {
+      .put(`/api/cuts/settings`, data, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
