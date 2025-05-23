@@ -166,7 +166,6 @@ const Setting = () => {
           </Button>
         )}
       </motion.div>
-      {JSON.stringify(state, null, 2)}
     </div>
   );
 };
