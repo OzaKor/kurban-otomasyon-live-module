@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -10,7 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import useCutListStore from "@/store/useCutListSrore";
+import useCutListStore from "@/store/cuts/useCutListSrore";
+import useUserStore from "@/store/useUserStore";
 
 const headings = [
   {
@@ -41,7 +42,12 @@ const headings = [
 ];
 
 const CutTable = () => {
-  const { cutLists } = useCutListStore();
+  const { cutLists, fetchCutLists } = useCutListStore();
+  const { userToken } = useUserStore();
+
+  useEffect(() => {
+    fetchCutLists(userToken);
+  }, []);
 
   return (
     <div className="p-8">

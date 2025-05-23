@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion"; 
-import useCutSettingStore from "@/store/useCutSettingStore";
+import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 
 const CutLoading = () => {
   return (
