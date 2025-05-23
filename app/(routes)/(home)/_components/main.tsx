@@ -3,7 +3,7 @@ import React, { useEffect, useCallback, useRef } from "react";
 import useUserStore from "@/store/useUserStore";
 import Manager from "@/app/(routes)/(home)/_components/manager";
 import Guest from "@/app/(routes)/(home)/_components/guest";
-import useCutSettingStore from "@/store/useCutSettingStore";
+import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 
 const Main = () => {
   const { user } = useUserStore();
