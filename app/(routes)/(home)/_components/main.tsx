@@ -4,26 +4,29 @@ import useUserStore from "@/store/useUserStore";
 import Manager from "@/app/(routes)/(home)/_components/manager";
 import Guest from "@/app/(routes)/(home)/_components/guest";
 import useCutSettingStore from "@/store/cuts/useCutSettingStore";
+import useCutListStore from "@/store/cuts/useCutListSrore";
 
 const Main = () => {
-  const { user } = useUserStore();
-  const { fetchCutSetting, state } = useCutSettingStore();
+  const { user, userToken } = useUserStore();
+  const { fetchCutSetting } = useCutSettingStore();
+  const { fetchCutLists } = useCutListStore();
   const isInitialMount = useRef(true);
   const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
 
-  const fetchData = useCallback(() => {
+  const fetchDt = useCallback(() => {
     fetchCutSetting();
-  }, [fetchCutSetting]);
+    fetchCutLists(userToken);
+  }, [fetchCutSetting, fetchCutLists, userToken]);
 
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      fetchData();
+      fetchDt();
     }
 
     if (user?.role !== "super_admin") {
       settingSetInterval.current = window.setInterval(() => {
-        fetchData();
+        fetchDt();
       }, 3000);
     }
 
@@ -32,7 +35,7 @@ const Main = () => {
         clearInterval(settingSetInterval.current);
       }
     };
-  }, [fetchData, user?.role]);
+  }, [fetchDt, user?.role, userToken]);
 
   return (
     <>
