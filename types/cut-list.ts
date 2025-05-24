@@ -3,5 +3,4 @@ export default interface CutList {
     patoc: string;
     time: string;
     type: string;
-    action: string;
 }

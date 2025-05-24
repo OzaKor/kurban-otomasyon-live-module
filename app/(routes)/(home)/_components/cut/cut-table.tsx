@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import useCutListStore from "@/store/cuts/useCutListSrore";
+import CutList from "@/types/cut-list";
+import { Icon } from "@iconify/react";
 
 const headings = [
   {
@@ -39,6 +41,20 @@ const headings = [
     className: "w-[100px] text-right pr-10",
   },
 ];
+
+const ActionBtns = ({ cutList }: { cutList: CutList }) => {
+  console.log(cutList);
+  return (
+    <Button
+      variant="empty"
+      className="hover:cursor-pointer bg-transparent outline-none shadow-none group transition-colors"
+    >
+      <Icon icon="line-md:close-circle-twotone"
+      className="group-hover:text-red-400 text-red-500 group-active:text-red-600"
+       style={{width: "32px", height: "32px"}} />
+    </Button>
+  );
+};
 
 const CutTable = () => {
   const { cutLists } = useCutListStore();
@@ -82,12 +98,7 @@ const CutTable = () => {
                   {cutList.type}
                 </TableCell>
                 <TableCell className="text-right py-4 px-5">
-                  <Button
-                    variant="ghost"
-                    className="text-green-600 hover:text-green-700 hover:bg-green-50 font-medium text-base px-3 py-1 hover:cursor-pointer"
-                  >
-                    {cutList.action}
-                  </Button>
+                  <ActionBtns cutList={cutList} />
                 </TableCell>
               </TableRow>
             ))}
