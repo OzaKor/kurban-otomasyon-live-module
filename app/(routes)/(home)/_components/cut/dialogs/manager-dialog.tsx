@@ -251,50 +251,50 @@ const ManagerDialog = () => {
                 Ödeme Durumları
               </h4>
               <div className="overflow-x-auto rounded-lg border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <Table className="min-w-full divide-y divide-gray-200">
+                  <TableHeader className="bg-gray-50">
+                    <TableRow>
+                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Hissedar
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      </TableHead>
+                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Hisse Adedi
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      </TableHead>
+                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Hisse Fiyatı
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      </TableHead>
+                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Toplam
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      </TableHead>
+                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Kalan Ödeme
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      </TableHead>
+                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Durum
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="bg-white divide-y divide-gray-200">
                     {fakeData.customers.map((customer, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="font-bold text-gray-900">
                             {customer.full_name}
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
                           {customer.share_count}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
                           {customer.share_price}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
                           {customer.price}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
                           {customer.payment_remaining}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={cn(
                               "px-3 py-1 text-xs font-bold rounded-full",
@@ -305,11 +305,11 @@ const ManagerDialog = () => {
                           >
                             {customer.payment_status}
                           </span>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           </div>
@@ -368,9 +368,9 @@ const ManagerDialog = () => {
             <DialogClose asChild>
               <Button
                 onClick={() => setOpen(false)}
-                variant="outline"
+                variant="secondary"
                 size="lg"
-                className="bg-gray-50  hover:opacity-80 transition-all hover:scale-105 hover:cursor-pointer active:scale-100 active:opacity-100"
+                className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
               >
                 Kapat
               </Button>
