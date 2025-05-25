@@ -54,7 +54,7 @@ interface ErrorResponse {
 
 type ApiResponse = SuccessResponse | ErrorResponse;
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const response = await axios.get<ApiResponse>(url, {
       headers: {

@@ -8,17 +8,16 @@ import useCutListStore from "@/store/cuts/useCutListSrore";
 import ManagerDialog from "@/app/(routes)/(home)/_components/cut/dialogs/manager-dialog";
 
 const Main = () => {
-  const { user, userToken } = useUserStore();
-  const { fetchCutSetting,state } = useCutSettingStore();
+  const { user } = useUserStore();
+  const { fetchCutSetting } = useCutSettingStore();
   const { fetchCutLists } = useCutListStore();
   const isInitialMount = useRef(true);
   const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
 
   const fetchDt = useCallback(() => {
     fetchCutSetting();
-    console.log(state);
     fetchCutLists();
-  }, [fetchCutSetting, fetchCutLists, userToken,state]);
+  }, [fetchCutSetting, fetchCutLists]);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -37,7 +36,7 @@ const Main = () => {
         clearInterval(settingSetInterval.current);
       }
     };
-  }, [fetchDt, user?.role, userToken]);
+  }, [fetchDt, user?.role]);
 
   return (
     <>
