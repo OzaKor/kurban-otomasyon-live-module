@@ -1,6 +1,6 @@
 export interface cutSettingInterface {
   proccessStart: boolean;
   proccessEnd: boolean;
-  processContiune: boolean;
+  processContinue: boolean;
   processStop: boolean;
 };

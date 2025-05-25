@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { motion, AnimatePresence } from "framer-motion"; 
+import { motion, AnimatePresence } from "framer-motion";
 import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 
 const CutLoading = () => {
@@ -34,35 +34,35 @@ const Cut = () => {
   const { state } = useCutSettingStore();
 
   let ComponentToRender = null;
-  let componentKey = "cut-info-default"; 
+  let componentKey = "cut-info-default";
 
-  if (state.proccessStart || state.processContiune) {
+  if (state.proccessStart) {
+    componentKey = "cut-info-active";
     ComponentToRender = DynamicCutInfo;
-    componentKey = "cut-info-active"; 
-  } else if (state.proccessEnd || state.processStop) {
+  } else if (state.proccessEnd && state.processStop) {
+    componentKey = "cut-table-active";
     ComponentToRender = DynamicCutTable;
-    componentKey = "cut-table-active"; 
   } else {
+    componentKey = "cut-info-active";
     ComponentToRender = DynamicCutInfo;
-    componentKey = "cut-info-default"; 
   }
 
   const variants = {
-    initial: { opacity: 0, y: 20 }, 
-    animate: { opacity: 1, y: 0 }, 
-    exit: { opacity: 0, y: -20 }, 
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
   };
 
   return (
     <AnimatePresence mode="wait">
       {ComponentToRender && (
         <motion.div
-          key={componentKey} 
-          initial="initial"   
-          animate="animate"   
-          exit="exit"         
-          variants={variants} 
-          transition={{ duration: 0.3 }} 
+          key={componentKey}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={variants}
+          transition={{ duration: 0.3 }}
         >
           <ComponentToRender />
         </motion.div>

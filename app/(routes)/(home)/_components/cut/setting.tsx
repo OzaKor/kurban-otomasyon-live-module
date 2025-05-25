@@ -26,7 +26,7 @@ const Setting = () => {
             ...prev,
             proccessStart: false,
             proccessEnd: true,
-            processContiune: false,
+            processContinue: false,
             processStop: true,
           };
 
@@ -35,7 +35,7 @@ const Setting = () => {
             ...prev,
             proccessStart: true,
             proccessEnd: false,
-            processContiune: false,
+            processContinue: false,
             processStop: false,
           };
 
@@ -44,16 +44,16 @@ const Setting = () => {
             ...prev,
             proccessStart: false,
             proccessEnd: true,
-            processContiune: true,
+            processContinue: true,
             processStop: false,
           };
 
-        case "contiune":
+        case "continue":
           return {
             ...prev,
             proccessStart: false,
             proccessEnd: true,
-            processContiune: false,
+            processContinue: false,
             processStop: true,
           };
 
@@ -130,13 +130,13 @@ const Setting = () => {
             Kesime Başla
           </Button>
         )}
-        {state.processContiune && (
+        {state.processContinue && (
           <Button
             className={cn(
               "flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
               loading && "cursor-not-allowed opacity-70"
             )}
-            onClick={() => handleProcessCut("contiune")}
+            onClick={() => handleProcessCut("continue")}
             disabled={loading}
           >
             <RefreshCw className={cn("size-5", loading && "animate-pulse")} />

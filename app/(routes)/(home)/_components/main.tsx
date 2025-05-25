@@ -8,15 +8,16 @@ import useCutListStore from "@/store/cuts/useCutListSrore";
 
 const Main = () => {
   const { user, userToken } = useUserStore();
-  const { fetchCutSetting } = useCutSettingStore();
+  const { fetchCutSetting,state } = useCutSettingStore();
   const { fetchCutLists } = useCutListStore();
   const isInitialMount = useRef(true);
   const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
 
   const fetchDt = useCallback(() => {
     fetchCutSetting();
+    console.log(state);
     fetchCutLists();
-  }, [fetchCutSetting, fetchCutLists, userToken]);
+  }, [fetchCutSetting, fetchCutLists, userToken,state]);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -27,7 +28,7 @@ const Main = () => {
     if (user?.role !== "super_admin") {
       settingSetInterval.current = window.setInterval(() => {
         fetchDt();
-      }, 15000);
+      }, 1500);
     }
 
     return () => {
