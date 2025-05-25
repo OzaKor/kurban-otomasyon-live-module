@@ -15,7 +15,7 @@ const Main = () => {
 
   const fetchDt = useCallback(() => {
     fetchCutSetting();
-    fetchCutLists(userToken);
+    fetchCutLists();
   }, [fetchCutSetting, fetchCutLists, userToken]);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const Main = () => {
     if (user?.role !== "super_admin") {
       settingSetInterval.current = window.setInterval(() => {
         fetchDt();
-      }, 3000);
+      }, 15000);
     }
 
     return () => {

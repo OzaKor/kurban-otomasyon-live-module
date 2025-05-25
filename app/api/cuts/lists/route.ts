@@ -5,7 +5,6 @@ import CutList from "@/types/cut-list";
 
 const url = `${apiUrl}/live/cuts/lists`;
 
-// Başarılı yanıt tipi
 interface SuccessResponse {
   process: true;
   message: string;
@@ -47,41 +46,27 @@ interface SuccessResponse {
   }>;
 }
 
-// Başarısız yanıt tipi
 interface ErrorResponse {
   process: false;
   message: string;
-  data: [] | null | undefined; // Boş array, null veya undefined olabilir
+  data: [] | null | undefined; 
 }
 
-// Union type
 type ApiResponse = SuccessResponse | ErrorResponse;
 
 export async function GET(request: Request) {
   try {
-    const token = request.headers.get("Authorization");
-
-    if (!token || !token.startsWith("Bearer")) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const response = await axios.get<ApiResponse>(url, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: token,
       },
     });
 
     if (response.status === 200) {
-      console.log("response.data", response.data);
-      console.log("--------------------------------");
-
-      // Type guard kullanarak process kontrolü
       if (response.data.process === true) {
-        // TypeScript artık response.data'nın SuccessResponse olduğunu biliyor
         const successData = response.data as SuccessResponse;
-        
+
         if (successData.data && successData.data.length > 0) {
           const cutDt: CutList[] = successData.data.map((item, index) => ({
             index: index + 1,
@@ -90,41 +75,49 @@ export async function GET(request: Request) {
             type: item.tbody.cut_type,
           }));
 
-          return NextResponse.json(cutDt);
+          return NextResponse.json(
+            {
+              data: cutDt,
+            },
+            { status: 200 }
+          );
         } else {
           return NextResponse.json(
-            { message: "Kesim listesi boş." },
+            { message: "Kesim listesi boş.", data: [] },
             { status: 200 }
           );
         }
       } else {
-        // process false durumu
         return NextResponse.json(
-          { message: response.data.message || "Kesim işlemi devam etmiyor" },
-          { status: 200 } // API başarılı yanıt verdi ama kesim yok
+          {
+            message: response.data.message || "Kesim işlemi devam etmiyor",
+            data: [],
+          },
+          { status: 200 } 
         );
       }
     } else {
       return NextResponse.json(
-        { message: "API'den beklenmeyen yanıt kodu" },
+        { message: "API'den beklenmeyen yanıt kodu", data: [] },
         { status: response.status }
       );
     }
   } catch (error) {
     console.error("Kesim ayarları hatası: ", error);
-    
+
     if (axios.isAxiosError(error)) {
       return NextResponse.json(
-        { 
+        {
           message: error.response?.data?.message || "API bağlantı hatası",
-          error: error.message 
+          error: error.message,
+          data: [],
         },
         { status: error.response?.status || 500 }
       );
     }
-    
+
     return NextResponse.json(
-      { message: "Sunucu hatası oluştu" },
+      { message: "Sunucu hatası oluştu", data: [] },
       { status: 500 }
     );
   }
