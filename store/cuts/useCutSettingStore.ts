@@ -16,7 +16,7 @@ interface CutSettingStore {
 const initialState: cutSettingInterface = {
   proccessStart: false,
   proccessEnd: false,
-  processContiune: false,
+  processContinue: false,
   processStop: false,
 };
 
@@ -34,7 +34,7 @@ const useCutSettingStore = create<CutSettingStore>()((set) => ({
       state: {
         proccessStart: process.process_start,
         proccessEnd: process.process_end,
-        processContiune: process.process_continue,
+        processContinue: process.process_continue,
         processStop: process.process_stop,
       },
     });
