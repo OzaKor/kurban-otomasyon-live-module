@@ -34,7 +34,7 @@ const useCutListStore = create<CutListStore>((set) => ({
     if (!token) {
       return;
     }
-    const response = await axios.get("/api/cut-lists", {
+    const response = await axios.get("/api/cuts/lists", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
