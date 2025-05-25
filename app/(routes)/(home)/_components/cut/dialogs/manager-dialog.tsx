@@ -13,26 +13,26 @@ import { cn } from "@/lib/utils";
 
 const fakeData = {
   cut_info: {
-    id: 383,
-    cutting_sequence: "1011100",
-    patoc: "Patok-2",
-    cut_type: "Satış",
-    slaughter_date: "25.05.2025 20:18",
+    id: 381,
+    cutting_sequence: "26",
+    patoc: "Patok-3",
+    cut_type: "Hayvan Payı",
+    slaughter_date: "25.05.2025 20:19",
   },
   animal_info: {
-    ear_tag: "1011100",
+    ear_tag: "26",
     animal_type: "SIMMENTAL",
-    patoc: "Patok-2",
-    weight: null,
-    gender: "Erkek",
+    patoc: "Patok-3",
+    weight: "60KG",
+    gender: "Dişi",
   },
   customers: [
     {
       full_name: "Hakan KORKMAZ",
-      share_count: 1,
-      share_price: "₺100.000,00",
-      price: "₺105.650,00",
-      payment_remaining: "₺105.090,00",
+      share_count: 2,
+      share_price: "₺26.000,00",
+      price: "₺52.000,00",
+      payment_remaining: "₺2.000,00",
       payment_status: "Ödenmedi",
       sub_shareholders: [
         {
