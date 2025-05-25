@@ -8,6 +8,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/layout/logo";
@@ -315,7 +323,7 @@ const ManagerDialog = () => {
               disabled={loading}
               variant="destructive"
               size="lg"
-              className="flex items-center gap-3 hover:opacity-80 hover:scale-105 transition-all hover:cursor-pointer active:scale-100 active:opacity-100"
+              className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
             >
               {loading ? (
                 <svg
@@ -360,9 +368,9 @@ const ManagerDialog = () => {
             <DialogClose asChild>
               <Button
                 onClick={() => setOpen(false)}
-                variant="secondary"
+                variant="outline"
                 size="lg"
-                className="hover:opacity-80 hover:scale-105 transition-all hover:cursor-pointer active:scale-100 active:opacity-100"
+                className="bg-gray-50  hover:opacity-80 transition-all hover:scale-105 hover:cursor-pointer active:scale-100 active:opacity-100"
               >
                 Kapat
               </Button>
