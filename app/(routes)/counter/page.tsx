@@ -3,8 +3,8 @@ import Breadcrumbs from "@/components/breadcrumbs";
 
 const CounterPage = () => {
   return (
-    <div className="mt-4">
-      <Breadcrumbs
+    <div>
+    <Breadcrumbs
         items={[
           {
             href: "/",
@@ -20,7 +20,9 @@ const CounterPage = () => {
           },
         ]}
       />
+      <div className="relative">
       <Counter />
+      </div>
     </div>
   );
 };
