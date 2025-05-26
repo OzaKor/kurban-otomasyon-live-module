@@ -68,16 +68,11 @@ export async function GET() {
         const successData = response.data as SuccessResponse;
 
         if (successData.data && successData.data.length > 0) {
-          const cutDt: CutList[] = successData.data.map((item, index) => ({
-            index: index + 1,
-            patoc: item.tbody.patoc,
-            time: item.tbody.slaughter_date,
-            type: item.tbody.cut_type,
-          }));
+       
 
           return NextResponse.json(
             {
-              data: cutDt,
+              data: successData.data,
             },
             { status: 200 }
           );

@@ -57,7 +57,7 @@ const fakeData = {
 
 function CutDialog() {
   const { user } = useUserStore();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import useCutListStore from "@/store/cuts/useCutListSrore";
-import CutList from "@/types/cut-list";
+import CutList, { Modal } from "@/types/cut-list";
 import { Icon } from "@iconify/react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const headings = [
   {
@@ -42,22 +43,43 @@ const headings = [
   },
 ];
 
-const ActionBtns = ({ cutList }: { cutList: CutList }) => {
-  console.log(cutList);
-  return (
-    <Button
-      variant="empty"
-      className="hover:cursor-pointer bg-transparent outline-none shadow-none group transition-colors"
-    >
-      <Icon icon="line-md:close-circle-twotone"
-      className="group-hover:text-red-400 text-red-500 group-active:text-red-600"
-       style={{width: "32px", height: "32px"}} />
-    </Button>
-  );
-};
-
 const CutTable = () => {
-  const { cutLists } = useCutListStore();
+  const { cutLists, setCutLists } = useCutListStore();
+
+  const removeCutList = (removeIndex: number) => {
+    const newCutLists = cutLists.filter((_, index) => index !== removeIndex);
+    setCutLists(newCutLists);
+  };
+
+  const openModal = (cutList: CutList, removeIndex: number) => {
+    const modal: Modal = cutList.modal;
+
+    removeCutList(removeIndex);
+
+    console.log("modal: ", modal); // buraya yapılacak işlemler gelecek
+  };
+
+  const ActionBtns = ({
+    cutList,
+    removeIndex,
+  }: {
+    cutList: CutList;
+    removeIndex: number;
+  }) => {
+    return (
+      <Button
+        variant="empty"
+        className="hover:cursor-pointer bg-transparent outline-none shadow-none group transition-colors"
+        onClick={() => openModal(cutList, removeIndex)}
+      >
+        <Icon
+          icon="line-md:close-circle-twotone"
+          className="group-hover:text-red-400 text-red-500 group-active:text-red-600"
+          style={{ width: "32px", height: "32px" }}
+        />
+      </Button>
+    );
+  };
 
   return (
     <div className="p-8">
@@ -78,7 +100,7 @@ const CutTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cutLists.map((cutList) => (
+            {cutLists.map((cutList, index) => (
               <TableRow
                 key={cutList.index}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
@@ -98,7 +120,7 @@ const CutTable = () => {
                   {cutList.type}
                 </TableCell>
                 <TableCell className="text-right py-4 px-5">
-                  <ActionBtns cutList={cutList} />
+                  <ActionBtns cutList={cutList} removeIndex={index} />
                 </TableCell>
               </TableRow>
             ))}
