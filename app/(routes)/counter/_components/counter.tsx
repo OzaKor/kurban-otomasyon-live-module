@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Logo from "@/components/layout/logo";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const Counter = () => {
