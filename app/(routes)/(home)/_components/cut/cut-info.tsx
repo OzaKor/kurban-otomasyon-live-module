@@ -84,8 +84,7 @@ const CutInfo = () => {
             <div className="bg-red-50 p-4 rounded-md border-l-4 border-red-500 mb-6">
               <p className="text-red-700">
                 Şu anda kesim işlemi{" "}
-                <span className="font-bold">durdurulmuştur</span>
-                veya <span className="font-bold">henüz başlamamıştır</span>.
+                <span className="font-bold">durdurulmuştur</span> veya <span className="font-bold">henüz başlamamıştır</span>.
                 Lütfen görevlilerin yönlendirmelerini takip ediniz.
               </p>
             </div>
