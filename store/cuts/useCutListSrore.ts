@@ -5,15 +5,19 @@ import axios from "@/lib/axios";
 interface CutListStore {
   cutLists: CutList[];
   setCutLists: (cutLists: CutList[]) => void;
-  fetchCutLists: () => Promise<void>;
+  fetchCutLists: (limit: number) => Promise<void>;
 }
 
 const useCutListStore = create<CutListStore>((set) => ({
   cutLists: [],
   setCutLists: (cutLists) => set({ cutLists }),
-  fetchCutLists: async () => {
+  fetchCutLists: async (limit: number = 10) => {
     const tableList: CutList[] = [];
-    const response = await axios.get("/api/cuts/lists");
+    const response = await axios.get("/api/cuts/lists", {
+      params: {
+        limit,
+      },
+    });
     if (response.data.length > 0) {
       response.data.map((item: any, index: number) => {
         const tbody = item.tbody;

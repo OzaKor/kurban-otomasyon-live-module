@@ -2,18 +2,18 @@
 import React from "react";
 import {
   Table,
-  TableBody,
+  TableBody, // TableBody import edilmiş
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow, // Orijinal TableRow'u import ediyoruz
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import useCutListStore from "@/store/cuts/useCutListSrore";
 import CutList, { Modal } from "@/types/cut-list";
 import { Icon } from "@iconify/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion"; // motion ve AnimatePresence import edildi
 
 const headings = [
   {
@@ -43,6 +43,9 @@ const headings = [
   },
 ];
 
+// TableRow componentini motion.create() ile sarmalayarak animasyon yetenekleri kazandırıyoruz.
+const MotionTableRow = motion.create(TableRow);
+
 const CutTable = () => {
   const { cutLists, setCutLists } = useCutListStore();
 
@@ -53,9 +56,7 @@ const CutTable = () => {
 
   const openModal = (cutList: CutList, removeIndex: number) => {
     const modal: Modal = cutList.modal;
-
     removeCutList(removeIndex);
-
     console.log("modal: ", modal); // buraya yapılacak işlemler gelecek
   };
 
@@ -99,31 +100,50 @@ const CutTable = () => {
               ))}
             </TableRow>
           </TableHeader>
+          {/* TableBody component'i eklendi */}
           <TableBody>
-            {cutLists.map((cutList, index) => (
-              <TableRow
-                key={cutList.index}
-                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-              >
-                <TableCell className="font-medium py-4 px-5 text-base">
-                  <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
-                    {cutList.index}
-                  </div>
-                </TableCell>
-                <TableCell className="py-4 px-5 text-base">
-                  {cutList.patoc}
-                </TableCell>
-                <TableCell className="py-4 px-5 text-base">
-                  {cutList.time}
-                </TableCell>
-                <TableCell className="py-4 px-5 text-base">
-                  {cutList.type}
-                </TableCell>
-                <TableCell className="text-right py-4 px-5">
-                  <ActionBtns cutList={cutList} removeIndex={index} />
-                </TableCell>
-              </TableRow>
-            ))}
+            {/* cutLists map'ini AnimatePresence ile sarmalıyoruz */}
+            <AnimatePresence initial={false}>
+              {cutLists.map((cutList, index) => (
+                <MotionTableRow
+                  key={cutList.index}
+                  layout
+                  initial={{ opacity: 0, y: -20, height: 0 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    height: 'auto',
+                    transition: { duration: 0.3, ease: "easeInOut" }
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -20,
+                    height: 0,
+                    overflow: 'hidden',
+                    transition: { duration: 0.3, ease: "easeInOut" }
+                  }}
+                  className="border-b border-gray-100 hover:bg-gray-50"
+                >
+                  <TableCell className="font-medium py-4 px-5 text-base">
+                    <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
+                      {cutList.index}
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-5 text-base">
+                    {cutList.patoc}
+                  </TableCell>
+                  <TableCell className="py-4 px-5 text-base">
+                    {cutList.time}
+                  </TableCell>
+                  <TableCell className="py-4 px-5 text-base">
+                    {cutList.type}
+                  </TableCell>
+                  <TableCell className="text-right py-4 px-5">
+                    <ActionBtns cutList={cutList} removeIndex={index} />
+                  </TableCell>
+                </MotionTableRow>
+              ))}
+            </AnimatePresence>
           </TableBody>
           <TableFooter>
             <TableRow className="bg-gray-100 hover:bg-gray-100 border-t">

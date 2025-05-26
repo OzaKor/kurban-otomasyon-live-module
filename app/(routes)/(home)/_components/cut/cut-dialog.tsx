@@ -49,7 +49,7 @@ const fakeData = {
         {
           full_name: "Baba Korkmaz",
           share_count: "1",
-        },
+        }
       ],
     },
   ],
@@ -57,7 +57,7 @@ const fakeData = {
 
 function CutDialog() {
   const { user } = useUserStore();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function CutDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[75vw] max-w-[90%] h-[75vh] max-h-[90%] md:w-[90vw] md:max-w-[90%] md:h-[100vh] md:max-h-[75%] overflow-auto flex flex-col p-0 [&>button]:hidden">
         {/* Modal Header with Logo */}
-        <DialogHeader>
+        <DialogHeader className="">
           <DialogTitle className="flex flex-col sm:flex-row sm:justify-between items-center py-6 px-10 border-b border-gray-100 w-full">
             <div className="flex items-center mb-4 sm:mb-0">
               <Logo />
@@ -92,7 +92,8 @@ function CutDialog() {
                   src="/images/ozkr-logo.png"
                   width={600}
                   height={600}
-                  className="h-12" />
+                  className="h-12"
+                />
               </div>
             )}
           </DialogTitle>
@@ -193,7 +194,8 @@ function CutDialog() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
                             </svg>
                           </div>
                           <div>
@@ -247,7 +249,8 @@ function CutDialog() {
                                           strokeLinecap="round"
                                           strokeLinejoin="round"
                                           strokeWidth="2"
-                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                        />
                                       </svg>
                                     </div>
                                     <p className="text-gray-700 font-medium">
@@ -342,7 +345,8 @@ function CutDialog() {
                   src="/images/ozkr-logo.png"
                   width={2400}
                   height={1200}
-                  className="h-28" />
+                  className="h-28"
+                />
               </div>
             )}
           </div>
@@ -392,7 +396,8 @@ function CutDialog() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M5 13l4 4L19 7" />
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 )}
                 <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
