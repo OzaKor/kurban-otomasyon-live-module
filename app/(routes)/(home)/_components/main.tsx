@@ -5,7 +5,7 @@ import Manager from "@/app/(routes)/(home)/_components/manager";
 import Guest from "@/app/(routes)/(home)/_components/guest";
 import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 import useCutListStore from "@/store/cuts/useCutListSrore";
-import ManagerDialog from "@/app/(routes)/(home)/_components/cut/dialogs/manager-dialog";
+import CutDialog from "@/app/(routes)/(home)/_components/cut/cut-dialog";
 
 const Main = () => {
   const { user } = useUserStore();
@@ -28,7 +28,7 @@ const Main = () => {
     if (user?.role !== "super_admin") {
       settingSetInterval.current = window.setInterval(() => {
         fetchDt();
-      }, 1500);
+      }, 5000);
     }
 
     return () => {
@@ -42,7 +42,7 @@ const Main = () => {
     <>
       {user && user.role === "super_admin" && <Manager />}
       {(!user || user.role !== "super_admin") && <Guest />}
-      <ManagerDialog />
+      <CutDialog />
     </>
   );
 };

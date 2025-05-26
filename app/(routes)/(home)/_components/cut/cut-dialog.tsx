@@ -1,3 +1,8 @@
+"use client";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import Logo from "@/components/layout/logo";
+import useUserStore from "@/store/useUserStore";
 import {
   Dialog,
   DialogClose,
@@ -16,9 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import Logo from "@/components/layout/logo";
 
 const fakeData = {
   cut_info: {
@@ -53,9 +55,19 @@ const fakeData = {
   ],
 };
 
-const ManagerDialog = () => {
+function CutDialog() {
+  const { user } = useUserStore();
   const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user || user.role !== "super_admin") {
+      const timer = setInterval(() => {
+        setOpen(!open);
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [user, open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -66,12 +78,23 @@ const ManagerDialog = () => {
             <div className="flex items-center mb-4 sm:mb-0">
               <Logo />
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
-                {fakeData.cut_info.slaughter_date}
-              </h1>
-              <span className="text-xs text-gray-400">Kesim Tarihi</span>
-            </div>
+            {/* Kesim Tarihi */}
+            {!user || user.role !== "super_admin" ? (
+              <div className="flex flex-col items-center gap-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
+                  {fakeData.cut_info.slaughter_date}
+                </h1>
+                <span className="text-xs text-gray-400">Kesim Tarihi</span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <Logo
+                  src="/images/ozkr-logo.png"
+                  width={600}
+                  height={600}
+                  className="h-12" />
+              </div>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -170,29 +193,30 @@ const ManagerDialog = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                              />
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                           </div>
                           <div>
                             <p className="font-bold text-gray-800 text-lg">
                               {customer.full_name}
                             </p>
-                            <div className="flex items-center gap-3 mt-1">
-                              <span className="text-sm font-semibold text-gray-600">
-                                {customer.price}
-                              </span>
-                              <span
-                                className={cn(
-                                  "text-xs px-3 py-1 rounded-full font-medium",
-                                  customer.payment_status === "Ödendi"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                )}
-                              >
-                                {customer.payment_status}
-                              </span>
-                            </div>
+                            {user?.role === "super_admin" && (
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="text-sm font-semibold text-gray-600">
+                                  {customer.price}
+                                </span>
+                                <span
+                                  className={cn(
+                                    "text-xs px-3 py-1 rounded-full font-medium",
+                                    customer.payment_status === "Ödendi"
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-red-100 text-red-800"
+                                  )}
+                                >
+                                  {customer.payment_status}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="bg-green-600 text-white text-sm px-4 py-2 rounded-full font-bold">
@@ -223,8 +247,7 @@ const ManagerDialog = () => {
                                           strokeLinecap="round"
                                           strokeLinejoin="round"
                                           strokeWidth="2"
-                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                       </svg>
                                     </div>
                                     <p className="text-gray-700 font-medium">
@@ -246,140 +269,151 @@ const ManagerDialog = () => {
             </div>
 
             {/* Detaylı Ödeme Bilgileri Tablosu */}
-            <div className="mt-10 border-t border-gray-200 pt-8">
-              <h4 className="font-bold text-green-700 mb-6 text-center text-xl">
-                Ödeme Durumları
-              </h4>
-              <div className="overflow-x-auto rounded-lg border border-gray-200">
-                <Table className="min-w-full divide-y divide-gray-200">
-                  <TableHeader className="bg-gray-50">
-                    <TableRow>
-                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Hissedar
-                      </TableHead>
-                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Hisse Adedi
-                      </TableHead>
-                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Hisse Fiyatı
-                      </TableHead>
-                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Toplam
-                      </TableHead>
-                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Kalan Ödeme
-                      </TableHead>
-                      <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Durum
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="bg-white divide-y divide-gray-200">
-                    {fakeData.customers.map((customer, index) => (
-                      <TableRow key={index} className="hover:bg-gray-50">
-                        <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-bold text-gray-900">
-                            {customer.full_name}
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
-                          {customer.share_count}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
-                          {customer.share_price}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
-                          {customer.price}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
-                          {customer.payment_remaining}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={cn(
-                              "px-3 py-1 text-xs font-bold rounded-full",
-                              customer.payment_status === "Ödendi"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            )}
-                          >
-                            {customer.payment_status}
-                          </span>
-                        </TableCell>
+            {user && user.role === "super_admin" ? (
+              <div className="mt-10 border-t border-gray-200 pt-8">
+                <h4 className="font-bold text-green-700 mb-6 text-center text-xl">
+                  Ödeme Durumları
+                </h4>
+                <div className="overflow-x-auto rounded-lg border border-gray-200">
+                  <Table className="min-w-full divide-y divide-gray-200">
+                    <TableHeader className="bg-gray-50">
+                      <TableRow>
+                        <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Hissedar
+                        </TableHead>
+                        <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Hisse Adedi
+                        </TableHead>
+                        <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Hisse Fiyatı
+                        </TableHead>
+                        <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Toplam
+                        </TableHead>
+                        <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Kalan Ödeme
+                        </TableHead>
+                        <TableHead className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Durum
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody className="bg-white divide-y divide-gray-200">
+                      {fakeData.customers.map((customer, index) => (
+                        <TableRow key={index} className="hover:bg-gray-50">
+                          <TableCell className="px-6 py-4 whitespace-nowrap">
+                            <div className="font-bold text-gray-900">
+                              {customer.full_name}
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
+                            {customer.share_count}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
+                            {customer.share_price}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
+                            {customer.price}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 whitespace-nowrap font-semibold">
+                            {customer.payment_remaining}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={cn(
+                                "px-3 py-1 text-xs font-bold rounded-full",
+                                customer.payment_status === "Ödendi"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              )}
+                            >
+                              {customer.payment_status}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="mt-10 border-t border-gray-200 pt-8">
+                <Logo
+                  src="/images/ozkr-logo.png"
+                  width={2400}
+                  height={1200}
+                  className="h-28" />
+              </div>
+            )}
           </div>
         </DialogDescription>
 
         {/* Modal Footer - Butonlar */}
-        <DialogFooter className="px-6 lg:px-8 pb-6">
-          <div className="flex justify-between w-full gap-4">
-            <Button
-              onClick={() => setLoading(true)}
-              disabled={loading}
-              variant="destructive"
-              size="lg"
-              className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
-            >
-              {loading ? (
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-              <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
-            </Button>
-
-            <DialogClose asChild>
+        {user && user.role === "super_admin" && (
+          <DialogFooter className="px-6 lg:px-8 pb-6">
+            <div className="flex justify-between w-full gap-4">
               <Button
-                onClick={() => setOpen(false)}
-                variant="secondary"
+                onClick={() => setLoading(true)}
+                disabled={loading}
+                variant="destructive"
                 size="lg"
-                className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
+                className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
               >
-                Kapat
+                {loading ? (
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+                <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
               </Button>
-            </DialogClose>
-          </div>
-        </DialogFooter>
+
+              <DialogClose asChild>
+                <Button
+                  onClick={() => setOpen(false)}
+                  variant="secondary"
+                  size="lg"
+                  className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-secondary hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
+                >
+                  Kapat
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
-};
+}
 
-export default ManagerDialog;
+export default CutDialog;
