@@ -55,7 +55,7 @@ const fakeData = {
   ],
 };
 
-const ManagerDialog = () => {
+function CutDialog() {
   const { user } = useUserStore();
   const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -92,8 +92,7 @@ const ManagerDialog = () => {
                   src="/images/ozkr-logo.png"
                   width={600}
                   height={600}
-                  className="h-12"
-                />
+                  className="h-12" />
               </div>
             )}
           </DialogTitle>
@@ -194,8 +193,7 @@ const ManagerDialog = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                              />
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                           </div>
                           <div>
@@ -249,8 +247,7 @@ const ManagerDialog = () => {
                                           strokeLinecap="round"
                                           strokeLinejoin="round"
                                           strokeWidth="2"
-                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                       </svg>
                                     </div>
                                     <p className="text-gray-700 font-medium">
@@ -345,8 +342,7 @@ const ManagerDialog = () => {
                   src="/images/ozkr-logo.png"
                   width={2400}
                   height={1200}
-                  className="h-28"
-                />
+                  className="h-28" />
               </div>
             )}
           </div>
@@ -396,8 +392,7 @@ const ManagerDialog = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M5 13l4 4L19 7"
-                    />
+                      d="M5 13l4 4L19 7" />
                   </svg>
                 )}
                 <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
@@ -419,6 +414,6 @@ const ManagerDialog = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}
 
-export default ManagerDialog;
+export default CutDialog;
