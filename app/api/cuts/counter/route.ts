@@ -12,7 +12,6 @@ export async function GET() {
         Accept: "application/json",
       },
     });
-    console.log("response.data: ", response.data);
 
     if (response.data.process) {
       return NextResponse.json({

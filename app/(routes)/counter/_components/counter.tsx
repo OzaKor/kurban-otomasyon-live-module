@@ -25,7 +25,6 @@ const Counter = () => {
           Accept: "application/json",
         },
       });
-      console.log("response.data: ", response);
 
       setUpdate(setCounter, response.data.counter ?? 0);
       const now = new Date();
@@ -87,8 +86,9 @@ const Counter = () => {
                   <Image
                     src="/images/logo.png"
                     alt="Logo"
-                    fill
-                    className="object-contain drop-shadow-md"
+                    width={1600}
+                    height={400}
+                    className="object-contain drop-shadow-md h-20 w-64 lg:w-96 mx-auto mb-2"
                     priority
                   />
                 </div>
@@ -123,8 +123,10 @@ const Counter = () => {
                   <Image
                     src="/images/ozkr-logo.png"
                     alt="Logo"
-                    fill
-                    className="object-contain"
+                    width={1600}
+                    height={400}
+                    className="object-contain h-20 w-60 lg:w-80 mx-auto"
+                    priority
                   />
                 </div>
               </div>
