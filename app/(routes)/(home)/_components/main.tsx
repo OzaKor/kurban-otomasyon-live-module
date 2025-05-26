@@ -28,7 +28,7 @@ const Main = () => {
     if (user?.role !== "super_admin") {
       settingSetInterval.current = window.setInterval(() => {
         fetchDt();
-      }, 1500);
+      }, 5000);
     }
 
     return () => {
