@@ -82,13 +82,13 @@ const Counter = () => {
             <CardHeader className="p-0 -mt-6">
               <div className="w-full bg-gradient-to-r from-green-600 to-green-500 p-5 text-center">
                 {/* Top Logo */}
-                <div className="h-20 w-64 lg:w-96 mx-auto mb-2 relative">
+                <div className="h-24 w-64 lg:w-90 mx-auto mb-2 relative">
                   <Image
-                    src="/images/logo.png"
+                    src="/images/white-logo.png"
                     alt="Logo"
-                    width={1600}
-                    height={400}
-                    className="object-contain drop-shadow-md h-20 w-64 lg:w-96 mx-auto mb-2"
+                    width={1757}
+                    height={501}
+                    className="object-contain drop-shadow-md h-20 w-64 lg:w-90 mx-auto mb-2"
                     priority
                   />
                 </div>
