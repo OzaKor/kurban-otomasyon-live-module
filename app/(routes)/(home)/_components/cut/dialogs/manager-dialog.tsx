@@ -1,3 +1,8 @@
+"use client";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import Logo from "@/components/layout/logo";
+import useUserStore from "@/store/useUserStore";
 import {
   Dialog,
   DialogClose,
@@ -16,10 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import Logo from "@/components/layout/logo";
-import useUserStore from "@/store/useUserStore";
 
 const fakeData = {
   cut_info: {
@@ -59,6 +60,15 @@ const ManagerDialog = () => {
   const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!user || user.role !== "super_admin") {
+      const timer = setInterval(() => {
+        setOpen(!open);
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [user, open]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[75vw] max-w-[90%] h-[75vh] max-h-[90%] md:w-[90vw] md:max-w-[90%] md:h-[100vh] md:max-h-[75%] overflow-auto flex flex-col p-0 [&>button]:hidden">
@@ -69,7 +79,7 @@ const ManagerDialog = () => {
               <Logo />
             </div>
             {/* Kesim Tarihi */}
-            {(!user || user.role !== "super_admin") ? (
+            {!user || user.role !== "super_admin" ? (
               <div className="flex flex-col items-center gap-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
                   {fakeData.cut_info.slaughter_date}
@@ -77,8 +87,13 @@ const ManagerDialog = () => {
                 <span className="text-xs text-gray-400">Kesim Tarihi</span>
               </div>
             ) : (
-             <div className="flex flex-col items-center gap-2">
-                <Logo src="/images/ozkr-logo.png" width={600} height={600} className="h-12"/>
+              <div className="flex flex-col items-center gap-2">
+                <Logo
+                  src="/images/ozkr-logo.png"
+                  width={600}
+                  height={600}
+                  className="h-12"
+                />
               </div>
             )}
           </DialogTitle>
@@ -326,75 +341,80 @@ const ManagerDialog = () => {
               </div>
             ) : (
               <div className="mt-10 border-t border-gray-200 pt-8">
-                <Logo src="/images/ozkr-logo.png" width={2400} height={1200} className="h-28" />
+                <Logo
+                  src="/images/ozkr-logo.png"
+                  width={2400}
+                  height={1200}
+                  className="h-28"
+                />
               </div>
             )}
           </div>
         </DialogDescription>
 
         {/* Modal Footer - Butonlar */}
-        {(user && user.role === "super_admin") && (
+        {user && user.role === "super_admin" && (
           <DialogFooter className="px-6 lg:px-8 pb-6">
             <div className="flex justify-between w-full gap-4">
               <Button
                 onClick={() => setLoading(true)}
                 disabled={loading}
-              variant="destructive"
-              size="lg"
-              className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
-            >
-              {loading ? (
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-              <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
-            </Button>
-
-            <DialogClose asChild>
-              <Button
-                onClick={() => setOpen(false)}
-                variant="secondary"
+                variant="destructive"
                 size="lg"
-                className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-secondary hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
+                className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
               >
-                Kapat
+                {loading ? (
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+                <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
               </Button>
-            </DialogClose>
-          </div>
-        </DialogFooter>
+
+              <DialogClose asChild>
+                <Button
+                  onClick={() => setOpen(false)}
+                  variant="secondary"
+                  size="lg"
+                  className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-secondary hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
+                >
+                  Kapat
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogFooter>
         )}
       </DialogContent>
     </Dialog>
