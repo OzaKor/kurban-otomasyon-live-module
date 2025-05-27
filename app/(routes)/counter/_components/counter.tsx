@@ -11,10 +11,6 @@ const Counter = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const setUpdate = (set: any, Value: string | number) => {
-    set(Value);
-  };
-
   const refreshCounter = async () => {
     setIsLoading(true);
     try {
@@ -26,18 +22,18 @@ const Counter = () => {
         },
       });
 
-      setUpdate(setCounter, response.data.counter ?? 0);
+      setCounter(response.data.counter ?? 0);
       const now = new Date();
-      setUpdate(setCutDate, now.toLocaleDateString("tr-TR"));
-      setUpdate(setCutTime, now.toLocaleTimeString("tr-TR"));
+      setCutDate(now.toLocaleDateString("tr-TR"));
+      setCutTime(now.toLocaleTimeString("tr-TR"));
       if (isError) {
         setIsError(false);
       }
     } catch (error) {
       console.error("Error fetching counter:", error);
-      setUpdate(setCounter, 0);
-      setUpdate(setCutDate, "");
-      setUpdate(setCutTime, "");
+      setCounter(0);
+      setCutDate("");
+      setCutTime("");
       setIsError(true);
     } finally {
       setIsLoading(false);
