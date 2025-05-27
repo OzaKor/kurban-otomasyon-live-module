@@ -20,38 +20,49 @@ export async function GET(request: NextRequest) {
     if (response.status === 200) {
       const dt = response.data;
       if (dt.process) {
-        console.log("response data: ", dt.data);
-        return NextResponse.json(dt.data);
+        return NextResponse.json({
+          data: {
+            cutLists: dt.data,
+            total_count: dt.total_count,
+          },
+        });
       }
 
       return NextResponse.json(
         {
-          message: "Sunucu hatası oluştu",
-          data: [],
-          total_count: 0,
+          message: "Veri bulunamadı",
+          data: {
+            process: false,
+            cutLists: [],
+            total_count: 0,
+          },
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
 
     return NextResponse.json(
       {
-        message: "Sunucu hatası oluştu",
-        data: [],
-        total_count: 0,
+        message: "Veri bulunamadı",
+        data: {
+          process: false,
+          cutLists: [],
+          total_count: 0,
+        },
       },
-      { status: 500 }
+      { status: 200 }
     );
   } catch (error) {
-    console.error("Kesim ayarları hatası: ", error);
 
     if (axios.isAxiosError(error)) {
       return NextResponse.json(
         {
           message: error.response?.data?.message || "API bağlantı hatası",
           error: error.message,
-          data: [],
-          total_count: 0,
+          data: {
+            cutLists: [],
+            total_count: 0,
+          },
         },
         { status: error.response?.status || 500 }
       );
@@ -60,8 +71,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         message: "Sunucu hatası oluştu",
-        data: [],
-        total_count: 0,
+        data: {
+          cutLists: [],
+          total_count: 0,
+        },
       },
       { status: 500 }
     );

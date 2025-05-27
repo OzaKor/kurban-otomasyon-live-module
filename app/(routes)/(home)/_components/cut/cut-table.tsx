@@ -2,12 +2,12 @@
 import React from "react";
 import {
   Table,
-  TableBody, // TableBody import edilmiş
+  TableBody,
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
-  TableRow, // Orijinal TableRow'u import ediyoruz
+  TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import useCutListStore from "@/store/cuts/useCutListSrore";
@@ -82,6 +82,9 @@ const CutTable = () => {
     );
   };
 
+
+  console.log("cutLists: ", cutLists);
+
   return (
     <div className="p-8">
       <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
@@ -106,7 +109,7 @@ const CutTable = () => {
             <AnimatePresence initial={false}>
               {cutLists.map((cutList, index) => (
                 <MotionTableRow
-                  key={cutList.index}
+                  key={cutList.tbody.id}
                   layout
                   initial={{ opacity: 0, y: -20, height: 0 }}
                   animate={{
@@ -126,17 +129,17 @@ const CutTable = () => {
                 >
                   <TableCell className="font-medium py-4 px-5 text-base">
                     <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
-                      {cutList.index}
+                      {index + 1}
                     </div>
                   </TableCell>
                   <TableCell className="py-4 px-5 text-base">
-                    {cutList.patoc}
+                    {cutList.tbody.patoc}
                   </TableCell>
                   <TableCell className="py-4 px-5 text-base">
-                    {cutList.time}
+                    {cutList.tbody.slaughter_date}
                   </TableCell>
                   <TableCell className="py-4 px-5 text-base">
-                    {cutList.type}
+                    {cutList.tbody.cut_type}
                   </TableCell>
                   <TableCell className="text-right py-4 px-5">
                     <ActionBtns cutList={cutList} removeIndex={index} />
