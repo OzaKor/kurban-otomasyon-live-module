@@ -120,7 +120,7 @@ const Counter = () => {
                 {/* Bottom Logo */}
                 <div className="h-20 w-60 lg:w-80 relative opacity-80">
                   <Image
-                    src="/images/ozkr-logo.png"
+                    src="/images/white-logo.png"
                     alt="Logo"
                     width={1600}
                     height={400}
@@ -128,6 +128,17 @@ const Counter = () => {
                     priority
                   />
                 </div>
+                {/* <div className="h-20 w-60 lg:w-80 relative opacity-80">
+                  <Image
+                    src="/images/ozkr-logo.png"
+                    alt="Logo"
+                    width={1600}
+                    height={400}
+                    className="object-contain h-20 w-60 lg:w-80 mx-auto"
+                    priority
+                  />
+                </div> */}
+
               </div>
             </CardContent>
           </Card>

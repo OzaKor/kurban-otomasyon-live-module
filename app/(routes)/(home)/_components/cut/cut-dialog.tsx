@@ -79,7 +79,15 @@ function CutDialog() {
               <Logo />
             </div>
             {/* Kesim Tarihi */}
-            {!user || user.role !== "super_admin" ? (
+            {!user || user.role !== "super_admin" && (
+              <div className="flex flex-col items-center gap-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
+                  {fakeData.cut_info.slaughter_date}
+                </h1>
+                <span className="text-xs text-gray-400">Kesim Tarihi</span>
+              </div>
+            )}
+            {/* {!user || user.role !== "super_admin" ? (
               <div className="flex flex-col items-center gap-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
                   {fakeData.cut_info.slaughter_date}
@@ -95,7 +103,7 @@ function CutDialog() {
                   className="h-12"
                 />
               </div>
-            )}
+            )} */}
           </DialogTitle>
         </DialogHeader>
 
@@ -341,13 +349,21 @@ function CutDialog() {
               </div>
             ) : (
               <div className="mt-10 border-t border-gray-200 pt-8">
-                <Logo
-                  src="/images/ozkr-logo.png"
-                  width={2400}
-                  height={1200}
-                  className="h-28"
-                />
-              </div>
+              <Logo
+                src="/images/white-logo.png"
+                width={2400}
+                height={1200}
+                className="h-28"
+              />
+            </div>
+              // <div className="mt-10 border-t border-gray-200 pt-8">
+              //   <Logo
+              //     src="/images/ozkr-logo.png"
+              //     width={2400}
+              //     height={1200}
+              //     className="h-28"
+              //   />
+              // </div>
             )}
           </div>
         </DialogDescription>
