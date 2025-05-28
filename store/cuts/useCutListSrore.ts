@@ -61,7 +61,7 @@ const useCutListStore = create<CutListStore>((set, get) => ({
     return set({ cutLists });
   },
   setCutTotalCount: (cutTotalCount) => set({ cutTotalCount }),
-  fetchCutLists: async (limit: number = 20) => {
+  fetchCutLists: async (limit: number = 10) => {
     try {
       const response = await axios.get<ApiCutListsParentResponse>("/api/cuts/lists", {
         params: {

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/layout/logo";
 import useUserStore from "@/store/useUserStore";
@@ -60,14 +60,14 @@ function CutDialog() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!user || user.role !== "super_admin") {
-      const timer = setInterval(() => {
-        setOpen(!open);
-      }, 5000);
-      return () => clearInterval(timer);
-    }
-  }, [user, open]);
+  // useEffect(() => {
+  //   if (!user || user.role !== "super_admin") {
+  //     const timer = setInterval(() => {
+  //       setOpen(!open);
+  //     }, 5000);
+  //     return () => clearInterval(timer);
+  //   }
+  // }, [user, open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
