@@ -14,14 +14,14 @@ const Main = () => {
   const isInitialMount = useRef(true);
   const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
 
-  const fetchDt = useCallback((limit:number = 20) => {
-    fetchCutSetting();
+  const fetchDt = useCallback(async (limit:number = 20) => {
+    await fetchCutSetting();   
 
     if (state.proccessEnd && state.processStop) {
-      fetchCutLists(limit);
+      await fetchCutLists(limit);
     }
 
-  }, [fetchCutSetting, fetchCutLists]);
+  }, [fetchCutSetting, fetchCutLists,state]);
 
   useEffect(() => {
     if (isInitialMount.current) {
