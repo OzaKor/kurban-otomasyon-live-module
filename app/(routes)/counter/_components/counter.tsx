@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import axios from "@/lib/axios";
 
 const Counter = () => {
+  const isInitialMount = useRef(true);
   const [counter, setCounter] = useState(0);
   const [cutDate, setCutDate] = useState("");
   const [cutTime, setCutTime] = useState("");
@@ -41,14 +42,16 @@ const Counter = () => {
   };
   // Refresh counter every 10 seconds
   useEffect(() => {
-    // Initial load
-    refreshCounter();
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      refreshCounter();
+    }
 
     // Set up polling every 10 seconds
     const interval = setInterval(refreshCounter, 10000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isInitialMount]);
 
   const isNumeric =
     Number(counter) && !isNaN(Number(counter)) && isFinite(Number(counter));
