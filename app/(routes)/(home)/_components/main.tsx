@@ -34,7 +34,7 @@ const Main = () => {
 
     if (user?.role !== "super_admin") {
       settingSetInterval.current = window.setInterval(() => {
-        fetchDt();
+        fetchDt(10);
       }, 5000);
     }
 

@@ -21,44 +21,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const fakeData = {
-  cut_info: {
-    id: 381,
-    cutting_sequence: "26",
-    patoc: "Patok-3",
-    cut_type: "Hayvan Payı",
-    slaughter_date: "25.05.2025 20:19",
-  },
-  animal_info: {
-    ear_tag: "26",
-    animal_type: "SIMMENTAL",
-    patoc: "Patok-3",
-    weight: "60KG",
-    gender: "Dişi",
-  },
-  customers: [
-    {
-      full_name: "Hakan KORKMAZ",
-      share_count: 2,
-      share_price: "₺26.000,00",
-      price: "₺52.000,00",
-      payment_remaining: "₺2.000,00",
-      payment_status: "Ödenmedi",
-      sub_shareholders: [
-        {
-          full_name: "Baba Korkmaz",
-          share_count: "1",
-        }
-      ],
-    },
-  ],
-};
+import useCutDialogStore from "@/store/cuts/useCutDialogStore";
+import useCutListStore from "@/store/cuts/useCutListSrore";
+import showToast from "@/lib/showToast";
 
 function CutDialog() {
   const { user } = useUserStore();
-  const [open, setOpen] = useState(false);
+  const { cutDialog, isModalOpen, setIsModalOpen, fetchCut } =
+    useCutDialogStore();
+  const { cutLists, setCutLists, setCutTotalCount,fetchCutLists } = useCutListStore();
   const [loading, setLoading] = useState(false);
+
+  const removeCutList = (removeCutId: number) => {
+    const newCutLists = cutLists.filter(
+      (cutList) => cutList.tbody.id !== removeCutId
+    );
+    setCutLists(newCutLists);
+  };
 
   // useEffect(() => {
   //   if (!user || user.role !== "super_admin") {
@@ -70,7 +49,7 @@ function CutDialog() {
   // }, [user, open]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogContent className="w-[75vw] max-w-[90%] h-[75vh] max-h-[90%] md:w-[90vw] md:max-w-[90%] md:h-[100vh] md:max-h-[75%] overflow-auto flex flex-col p-0 [&>button]:hidden">
         {/* Modal Header with Logo */}
         <DialogHeader className="">
@@ -79,14 +58,15 @@ function CutDialog() {
               <Logo />
             </div>
             {/* Kesim Tarihi */}
-            {!user || user.role !== "super_admin" && (
-              <div className="flex flex-col items-center gap-2">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
-                  {fakeData.cut_info.slaughter_date}
-                </h1>
-                <span className="text-xs text-gray-400">Kesim Tarihi</span>
-              </div>
-            )}
+            {!user ||
+              (user.role !== "super_admin" && (
+                <div className="flex flex-col items-center gap-2">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
+                    {cutDialog?.cut_info.slaughter_date}
+                  </h1>
+                  <span className="text-xs text-gray-400">Kesim Tarihi</span>
+                </div>
+              ))}
             {/* {!user || user.role !== "super_admin" ? (
               <div className="flex flex-col items-center gap-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
@@ -115,7 +95,7 @@ function CutDialog() {
                 {/* Kesim Sırası */}
                 <div className="flex flex-col items-center border-2 border-green-200 px-6 py-4 text-center rounded-lg bg-green-50">
                   <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-green-700">
-                    {fakeData.cut_info?.cutting_sequence}
+                    {cutDialog?.cut_info?.cutting_sequence}
                   </h1>
                   <span className="text-base font-semibold text-gray-600 mt-2">
                     Kesim Sırası
@@ -132,7 +112,7 @@ function CutDialog() {
                   <div
                     className={cn(
                       "grid gap-6",
-                      fakeData.animal_info?.weight
+                      cutDialog?.animal_info?.weight
                         ? "grid-cols-2 xl:grid-cols-4"
                         : "grid-cols-2 xl:grid-cols-3"
                     )}
@@ -142,7 +122,7 @@ function CutDialog() {
                         Patok
                       </span>
                       <p className="font-bold text-gray-800 text-lg">
-                        {fakeData.cut_info?.patoc}
+                        {cutDialog?.cut_info?.patoc}
                       </p>
                     </div>
                     <div className="text-center">
@@ -150,7 +130,7 @@ function CutDialog() {
                         Kesim Türü
                       </span>
                       <p className="font-bold text-gray-800 text-lg">
-                        {fakeData.cut_info?.cut_type}
+                        {cutDialog?.cut_info?.cut_type}
                       </p>
                     </div>
                     <div className="text-center">
@@ -158,16 +138,16 @@ function CutDialog() {
                         Hayvan Türü
                       </span>
                       <p className="font-bold text-gray-800 text-lg">
-                        {fakeData.animal_info?.animal_type}
+                        {cutDialog?.animal_info?.animal_type}
                       </p>
                     </div>
-                    {fakeData.animal_info?.weight && (
+                    {cutDialog?.animal_info?.weight && (
                       <div className="text-center">
                         <span className="text-sm text-gray-500 block mb-1">
                           Ağırlık
                         </span>
                         <p className="font-bold text-gray-800 text-lg">
-                          {fakeData.animal_info?.weight}
+                          {cutDialog?.animal_info?.weight}
                         </p>
                       </div>
                     )}
@@ -183,7 +163,7 @@ function CutDialog() {
 
                 {/* Hissedarlar Listesi */}
                 <div className="space-y-4">
-                  {fakeData.customers.map((customer, index) => (
+                  {cutDialog?.customers.map((customer, index) => (
                     <div
                       key={index}
                       className="border-l-4 border-green-500 pl-4 bg-gray-50 rounded-r-lg p-4"
@@ -310,7 +290,7 @@ function CutDialog() {
                       </TableRow>
                     </TableHeader>
                     <TableBody className="bg-white divide-y divide-gray-200">
-                      {fakeData.customers.map((customer, index) => (
+                      {cutDialog?.customers.map((customer, index) => (
                         <TableRow key={index} className="hover:bg-gray-50">
                           <TableCell className="px-6 py-4 whitespace-nowrap">
                             <div className="font-bold text-gray-900">
@@ -349,13 +329,13 @@ function CutDialog() {
               </div>
             ) : (
               <div className="mt-10 border-t border-gray-200 pt-8">
-              <Logo
-                src="/images/white-logo.png"
-                width={2400}
-                height={1200}
-                className="h-28"
-              />
-            </div>
+                <Logo
+                  src="/images/white-logo.png"
+                  width={2400}
+                  height={1200}
+                  className="h-28"
+                />
+              </div>
               // <div className="mt-10 border-t border-gray-200 pt-8">
               //   <Logo
               //     src="/images/ozkr-logo.png"
@@ -373,7 +353,41 @@ function CutDialog() {
           <DialogFooter className="px-6 lg:px-8 pb-6">
             <div className="flex justify-between w-full gap-4">
               <Button
-                onClick={() => setLoading(true)}
+                onClick={() => {
+                  setLoading(true);
+                  fetchCut(Number(cutDialog?.cut_info.id))
+                    .then((res) => {
+
+                      console.log("cutLists: ",cutLists.length);
+
+                      if (cutLists.length < 10) {
+                        fetchCutLists(20);
+                      }
+                      
+                      
+                      setCutTotalCount(res.data.cut.data.cut_list_count);
+
+                      removeCutList(Number(cutDialog?.cut_info.id));
+                      showToast(
+                        "cut-dialog-success",
+                        "Hayvan kesme işlemi başarılı",
+                        "success"
+                      );
+                      removeCutList(Number(cutDialog?.cut_info.id));
+                    })
+                    .catch((error) => {
+                      showToast(
+                        "cut-dialog-error",
+                        "Hayvan kesme işlemi sırasında hata oluştu",
+                        "error"
+                      );
+                      console.error("error: ", error);
+                    })
+                    .finally(() => {
+                      setLoading(false);
+                      setIsModalOpen(!isModalOpen);
+                    });
+                }}
                 disabled={loading}
                 variant="destructive"
                 size="lg"
@@ -421,7 +435,10 @@ function CutDialog() {
 
               <DialogClose asChild>
                 <Button
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    setLoading(false);
+                    setIsModalOpen(!isModalOpen);
+                  }}
                   variant="secondary"
                   size="lg"
                   className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-secondary hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"

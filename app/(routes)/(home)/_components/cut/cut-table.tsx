@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -15,12 +15,14 @@ import CutList, { Modal } from "@/types/cut-list";
 import { Icon } from "@iconify/react";
 import { AnimatePresence, motion } from "framer-motion"; // motion ve AnimatePresence import edildi
 import useUserStore from "@/store/useUserStore";
+import useCutDialogStore from "@/store/cuts/useCutDialogStore";
 
 // TableRow componentini motion.create() ile sarmalayarak animasyon yetenekleri kazandırıyoruz.
 const MotionTableRow = motion.create(TableRow);
 
 const CutTable = () => {
-  const { cutLists, setCutLists, cutTotalCount } = useCutListStore();
+  const { cutLists,  cutTotalCount } = useCutListStore();
+  const {setCutDialog,setIsModalOpen} = useCutDialogStore();
 
   const { user } = useUserStore();
 
@@ -46,31 +48,22 @@ const CutTable = () => {
       className: "w-[100px]",
     },
   ];
-
-  const removeCutList = (removeCutId: number) => {
-    const newCutLists = cutLists.filter(
-      (cutList) => cutList.tbody.id !== removeCutId
-    );
-    setCutLists(newCutLists);
-  };
-  const openModal = (cutList: CutList, removeCutId: number) => {
+  const openModal = (cutList: CutList,) => {
     const modal: Modal = cutList.modal;
-    removeCutList(removeCutId);
-    // console.log("modal: ", modal); // buraya yapılacak işlemler gelecek
+    setCutDialog(modal);
+    setIsModalOpen(true);
   };
 
   const ActionBtns = ({
     cutList,
-    removeCutId,
   }: {
     cutList: CutList;
-    removeCutId: number;
   }) => {
     return (
       <Button
         variant="empty"
         className="hover:cursor-pointer bg-transparent outline-none shadow-none group transition-colors"
-        onClick={() => openModal(cutList, removeCutId)}
+        onClick={() => openModal(cutList)}
       >
         <Icon
           icon="line-md:close-circle-twotone"
@@ -112,7 +105,7 @@ const CutTable = () => {
             <TableBody>
               {/* cutLists map'ini AnimatePresence ile sarmalıyoruz */}
               <AnimatePresence initial={false}>
-                {cutLists.map((cutItem, index) => (
+                {cutLists.slice(0,10).map((cutItem) => (
                   <MotionTableRow
                     key={cutItem.tbody.id}
                     layout
@@ -134,7 +127,7 @@ const CutTable = () => {
                   >
                     <TableCell className="font-medium py-4 px-5 text-base">
                       <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
-                        {index + 1}
+                        {cutItem.tbody.cutting_sequence}
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-5 text-base">
@@ -150,7 +143,6 @@ const CutTable = () => {
                       <TableCell className="text-right py-4 px-5">
                         <ActionBtns
                           cutList={cutItem}
-                          removeCutId={Number(cutItem.tbody.id)}
                         />
                       </TableCell>
                     )}
@@ -161,7 +153,7 @@ const CutTable = () => {
             <TableFooter>
               <TableRow className="bg-gray-100 hover:bg-gray-100 border-t">
                 <TableCell
-                  colSpan={4}
+                  colSpan={user && user.role == "super_admin" ? 4 : 3}
                   className="py-4 px-5 font-medium text-base"
                 >
                   Toplam Kesilecek Hayvan Sayısı
