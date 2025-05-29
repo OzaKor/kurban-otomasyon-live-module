@@ -153,7 +153,7 @@ const CutTable = () => {
             <TableFooter>
               <TableRow className="bg-gray-100 hover:bg-gray-100 border-t">
                 <TableCell
-                  colSpan={4}
+                  colSpan={user && user.role == "super_admin" ? 4 : 3}
                   className="py-4 px-5 font-medium text-base"
                 >
                   Toplam Kesilecek Hayvan Sayısı
