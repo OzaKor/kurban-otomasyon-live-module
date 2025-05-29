@@ -10,7 +10,7 @@ import CutDialog from "@/app/(routes)/(home)/_components/cut/cut-dialog";
 const Main = () => {
   const { user } = useUserStore();
   const { fetchCutSetting, state } = useCutSettingStore();
-  const { fetchCutLists, cutLists } = useCutListStore();
+  const { fetchCutLists } = useCutListStore();
   const isInitialMount = useRef(true);
   const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
 
