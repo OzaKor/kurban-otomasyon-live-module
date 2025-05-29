@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import axios from "@/lib/axios";
@@ -12,7 +12,7 @@ const Counter = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const refreshCounter = async () => {
+  const refreshCounter = useCallback(async () => {
     setIsLoading(true);
     try {
       const url = `api/cuts/counter`;
@@ -39,7 +39,8 @@ const Counter = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isError]); // isError dependency'si eklendi
+
   // Refresh counter every 10 seconds
   useEffect(() => {
     if (isInitialMount.current) {
@@ -51,7 +52,7 @@ const Counter = () => {
     const interval = setInterval(refreshCounter, 10000);
 
     return () => clearInterval(interval);
-  }, [isInitialMount]);
+  }, [refreshCounter]); // refreshCounter dependency olarak eklendi
 
   const isNumeric =
     Number(counter) && !isNaN(Number(counter)) && isFinite(Number(counter));
