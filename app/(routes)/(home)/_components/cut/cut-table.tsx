@@ -105,7 +105,7 @@ const CutTable = () => {
             <TableBody>
               {/* cutLists map'ini AnimatePresence ile sarmalıyoruz */}
               <AnimatePresence initial={false}>
-                {cutLists.slice(0,10).map((cutItem, index) => (
+                {cutLists.slice(0,10).map((cutItem) => (
                   <MotionTableRow
                     key={cutItem.tbody.id}
                     layout
@@ -127,7 +127,7 @@ const CutTable = () => {
                   >
                     <TableCell className="font-medium py-4 px-5 text-base">
                       <div className="flex items-center justify-center w-10 h-10 bg-green-700 text-white rounded-full font-bold text-base">
-                        {index + 1}
+                        {cutItem.tbody.cutting_sequence}
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-5 text-base">

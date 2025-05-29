@@ -354,6 +354,7 @@ function CutDialog() {
             <div className="flex justify-between w-full gap-4">
               <Button
                 onClick={() => {
+                  setLoading(true);
                   fetchCut(Number(cutDialog?.cut_info.id))
                     .then((res) => {
 

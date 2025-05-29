@@ -5,6 +5,7 @@ import axios from "@/lib/axios";
 interface RawApiCutItem {
   tbody: {
     id: string | number;
+    cutting_sequence: string | number;
     patoc: string;
     slaughter_date: string;
     cut_type: string;
@@ -90,6 +91,7 @@ const useCutListStore = create<CutListStore>((set, get) => ({
           return {
             tbody: {
               id: tbody?.id,
+              cutting_sequence: Number(tbody?.cutting_sequence),
               patoc: tbody?.patoc,
               slaughter_date: tbody?.slaughter_date,
               cut_type: tbody?.cut_type,
