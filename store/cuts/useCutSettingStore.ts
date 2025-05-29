@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import axios from "@/lib/axios";
 import { cutSettingInterface } from "@/types/cut-setting";
 
@@ -20,12 +21,14 @@ const initialState: cutSettingInterface = {
   processStop: false,
 };
 
-const useCutSettingStore = create<CutSettingStore>()((set) => ({
-  state: initialState,
-  setState: (state) =>
-    set((store) => ({
-      state: typeof state === "function" ? state(store.state) : state,
-    })),
+const useCutSettingStore = create<CutSettingStore>()(
+  persist(
+    (set) => ({
+      state: initialState,
+      setState: (state) =>
+        set((store) => ({
+          state: typeof state === "function" ? state(store.state) : state,
+        })),
   fetchCutSetting: async () => {
     const response = await axios.get("/api/cuts/settings");
     const process = await response.data;
@@ -40,6 +43,13 @@ const useCutSettingStore = create<CutSettingStore>()((set) => ({
     });
   },
   clear: () => set({ state: initialState }),
-}));
+    }),
+    {
+      name: "cut-setting-storage",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => ({ state: state.state }),
+    }
+  )
+);
 
 export default useCutSettingStore;

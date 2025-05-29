@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/components/layout/logo";
 import CurrentTime from "@/components/current-time";
 const CutInfo = () => {
@@ -7,11 +8,11 @@ const CutInfo = () => {
       <div className="bg-white p-4 flex flex-col items-center justify-center">
         <div className="flex flex-col items-center space-y-2 mb-4">
           <Logo className="h-28 mb-4" alt="Kurban Kesim Logo" />
-          <Logo
+          {/* <Logo
             className="h-20"
             alt="Kurban Kesim Logo"
             src="/images/ozkr-logo.png"
-          />
+          /> */}
         </div>
 
         <h1 className="text-2xl font-bold text-green-700 text-center">
@@ -111,26 +112,33 @@ const CutInfo = () => {
         </div>
       </div>
       {/* Durum Bilgisi - Yeşil versiyonu */}
-      <div className="bg-white mx-6 mb-6 p-4 rounded-lg shadow-md">
+      {/* <div className="bg-white mx-6 mb-6 p-4 rounded-lg shadow-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+            {
+              state.proccessStart && (
+                <>
+                 <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
             <span className="text-gray-700">
-              Kesim Durumu:{" "}
-              <span className="font-semibold text-green-600">Durduruldu</span>
+              Kesim Durumu:  <span className="font-semibold text-red-600">Başlamamış</span>
             </span>
+            </>
+              ) 
+            }
+           
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Alt Logo Alanı */}
-      <div className="bg-white mt-auto p-4 flex justify-center items-center">
+      {/* <div className="bg-white mt-auto p-4 flex justify-center items-center">
         <Logo
           className="h-20"
           alt="Kurban Kesim Logo"
           src="/images/ozkr-logo.png"
         />
       </div>
+      */}
     </div>
   );
 };

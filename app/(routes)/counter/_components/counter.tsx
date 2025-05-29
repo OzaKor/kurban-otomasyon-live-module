@@ -1,17 +1,18 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import axios from "@/lib/axios";
 
 const Counter = () => {
+  const isInitialMount = useRef(true);
   const [counter, setCounter] = useState(0);
   const [cutDate, setCutDate] = useState("");
   const [cutTime, setCutTime] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const refreshCounter = async () => {
+  const refreshCounter = useCallback(async () => {
     setIsLoading(true);
     try {
       const url = `api/cuts/counter`;
@@ -38,17 +39,20 @@ const Counter = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isError]); // isError dependency'si eklendi
+
   // Refresh counter every 10 seconds
   useEffect(() => {
-    // Initial load
-    refreshCounter();
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      refreshCounter();
+    }
 
     // Set up polling every 10 seconds
     const interval = setInterval(refreshCounter, 10000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshCounter]); // refreshCounter dependency olarak eklendi
 
   const isNumeric =
     Number(counter) && !isNaN(Number(counter)) && isFinite(Number(counter));
@@ -117,7 +121,7 @@ const Counter = () => {
                 {/* Bottom Logo */}
                 <div className="h-20 w-60 lg:w-80 relative opacity-80">
                   <Image
-                    src="/images/ozkr-logo.png"
+                    src="/images/white-logo.png"
                     alt="Logo"
                     width={1600}
                     height={400}
@@ -125,6 +129,17 @@ const Counter = () => {
                     priority
                   />
                 </div>
+                {/* <div className="h-20 w-60 lg:w-80 relative opacity-80">
+                  <Image
+                    src="/images/ozkr-logo.png"
+                    alt="Logo"
+                    width={1600}
+                    height={400}
+                    className="object-contain h-20 w-60 lg:w-80 mx-auto"
+                    priority
+                  />
+                </div> */}
+
               </div>
             </CardContent>
           </Card>

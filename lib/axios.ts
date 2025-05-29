@@ -5,10 +5,10 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   token?: string;
 }
 
-export const apiUrl=process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export const apiUrl=process.env.NODE_ENV === "production" ? process.env.LARAVEL_API_URL : "http://127.0.0.1:8000/api/v1";
 
 const axiosInstance: AxiosInstance = axios.create({
-  timeout: 10000,
+  timeout: 25000,
   headers: {
     'Content-Type': 'application/json',
   },

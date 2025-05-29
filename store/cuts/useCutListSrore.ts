@@ -40,10 +40,10 @@ interface RawApiCutItem {
 }
 
 interface ApiCutListsParentResponse {
-  cutLists: { 
+  cutLists: {
     cut_lists: RawApiCutItem[];
-    total_count: number;
-  }
+    cut_total_count: number;
+  };
 }
 
 interface CutListStore {
@@ -61,52 +61,59 @@ const useCutListStore = create<CutListStore>((set, get) => ({
     return set({ cutLists });
   },
   setCutTotalCount: (cutTotalCount) => set({ cutTotalCount }),
-  fetchCutLists: async (limit: number = 20) => {
+  fetchCutLists: async (limit: number = 10) => {
     try {
-      const response = await axios.get<ApiCutListsParentResponse>("/api/cuts/lists", {
-        params: {
-          limit,
-        },
-      });
+      const response = await axios.get<ApiCutListsParentResponse>(
+        "/api/cuts/lists",
+        {
+          params: {
+            limit,
+          },
+        }
+      );
 
       const rawApiItems: RawApiCutItem[] = response.data.cutLists.cut_lists;
-      const newTotalCount: number = response.data.cutLists.total_count;
+      const newTotalCount: number = response.data.cutLists.cut_total_count;
 
-      const processedFetchedItems: CutList[] = rawApiItems.map((item: RawApiCutItem): CutList => {
-        const tbody = item.tbody;
-        const modal = item.modal;
+      const processedFetchedItems: CutList[] = rawApiItems
+        .map((item: RawApiCutItem): CutList => {
+          const tbody = item.tbody;
+          const modal = item.modal;
 
-        if (!tbody || !modal || !modal.cut_info || !modal.animal_info) {
-            console.warn("API'den eksik öğe verisi alındı, öğe atlanıyor:", item);
-        }
-        
-        return {
-          tbody: {
-            id: tbody?.id,
-            patoc: tbody?.patoc,
-            slaughter_date: tbody?.slaughter_date,
-            cut_type: tbody?.cut_type,
-          },
-          modal: {
-            cut_info: {
-              id: modal?.cut_info?.id,
-              cutting_sequence: modal?.cut_info?.cutting_sequence,
-              patoc: modal?.cut_info?.patoc,
-              cut_type: modal?.cut_info?.cut_type,
-              slaughter_date: modal?.cut_info?.slaughter_date,
+          if (!tbody || !modal || !modal.cut_info || !modal.animal_info) {
+            console.warn(
+              "API'den eksik öğe verisi alındı, öğe atlanıyor:",
+              item
+            );
+          }
+
+          return {
+            tbody: {
+              id: tbody?.id,
+              patoc: tbody?.patoc,
+              slaughter_date: tbody?.slaughter_date,
+              cut_type: tbody?.cut_type,
             },
-            animal_info: {
-              ear_tag: modal?.animal_info?.ear_tag,
-              animal_type: modal?.animal_info?.animal_type,
-              patoc: modal?.animal_info?.patoc,
-              weight: modal?.animal_info?.weight,
-              gender: modal?.animal_info?.gender,
+            modal: {
+              cut_info: {
+                id: modal?.cut_info?.id,
+                cutting_sequence: modal?.cut_info?.cutting_sequence,
+                patoc: modal?.cut_info?.patoc,
+                cut_type: modal?.cut_info?.cut_type,
+                slaughter_date: modal?.cut_info?.slaughter_date,
+              },
+              animal_info: {
+                ear_tag: modal?.animal_info?.ear_tag,
+                animal_type: modal?.animal_info?.animal_type,
+                patoc: modal?.animal_info?.patoc,
+                weight: modal?.animal_info?.weight,
+                gender: modal?.animal_info?.gender,
+              },
+              customers: modal?.customers || [],
             },
-            customers: modal?.customers || [], 
-          },
-        };
-      }).filter(item => item.tbody?.id != null); 
-
+          };
+        })
+        .filter((item) => item.tbody?.id != null);
 
       const currentState = get();
       const currentCutLists = currentState.cutLists;
@@ -117,8 +124,9 @@ const useCutListStore = create<CutListStore>((set, get) => ({
         cutListsDataChanged = true;
       } else {
         for (let i = 0; i < processedFetchedItems.length; i++) {
-         
-          if (currentCutLists[i].tbody.id !== processedFetchedItems[i].tbody.id) {
+          if (
+            currentCutLists[i].tbody.id !== processedFetchedItems[i].tbody.id
+          ) {
             cutListsDataChanged = true;
             break;
           }
@@ -126,18 +134,17 @@ const useCutListStore = create<CutListStore>((set, get) => ({
       }
 
       const totalCountChanged = currentTotalCount !== newTotalCount;
-      
+
       if (cutListsDataChanged || totalCountChanged) {
         const updates: Partial<CutListStore> = {};
         if (cutListsDataChanged) {
-          updates.cutLists = processedFetchedItems; 
+          updates.cutLists = processedFetchedItems;
         }
         if (totalCountChanged) {
           updates.cutTotalCount = newTotalCount;
         }
         set(updates);
       }
-
     } catch (error) {
       console.error("Kesim listeleri alınırken hata oluştu:", error);
     }

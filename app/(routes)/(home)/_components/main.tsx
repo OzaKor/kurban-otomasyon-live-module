@@ -9,20 +9,27 @@ import CutDialog from "@/app/(routes)/(home)/_components/cut/cut-dialog";
 
 const Main = () => {
   const { user } = useUserStore();
-  const { fetchCutSetting } = useCutSettingStore();
+  const { fetchCutSetting, state } = useCutSettingStore();
   const { fetchCutLists } = useCutListStore();
   const isInitialMount = useRef(true);
   const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
 
-  const fetchDt = useCallback(() => {
-    fetchCutSetting();
-    fetchCutLists();
-  }, [fetchCutSetting, fetchCutLists]);
+  const fetchDt = useCallback(
+    async (limit: number = 20) => {
+      await fetchCutSetting();
+
+      if (state.proccessEnd && state.processStop) {
+        await fetchCutLists(limit);
+      }
+    },
+    [fetchCutSetting, fetchCutLists, state]
+  );
 
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      fetchDt();
+      const limit = user?.role === "super_admin" ? 20 : 10;
+      fetchDt(limit);
     }
 
     if (user?.role !== "super_admin") {
