@@ -26,7 +26,7 @@ const useUserStore = create<UserStore>()(
           return;
         }
 
-        const response = await axios.get("/api/auth/verify-token", {
+        await axios.get("/api/auth/verify-token", {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
