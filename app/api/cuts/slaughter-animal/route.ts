@@ -2,18 +2,23 @@ import { apiUrl } from "@/lib/axios";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-const url = `${apiUrl}/live/cuts/cut`;
+const url = `${apiUrl}/live/cuts/slaughter-animal`;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("body: ", body);
+    
     const response = await axios.post(url, body,{
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
+    });   
+
+    return NextResponse.json({
+      cut: response.data,
     });
-    return NextResponse.json(response);
   } catch (error) {
     console.log(`error ${apiUrl}: `,error);
     

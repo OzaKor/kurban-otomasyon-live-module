@@ -27,8 +27,9 @@ import showToast from "@/lib/showToast";
 
 function CutDialog() {
   const { user } = useUserStore();
-  const { cutDialog, isModalOpen, setIsModalOpen,fetchCut } = useCutDialogStore();
-  const { cutLists, setCutLists } = useCutListStore();
+  const { cutDialog, isModalOpen, setIsModalOpen, fetchCut } =
+    useCutDialogStore();
+  const { cutLists, setCutLists, setCutTotalCount } = useCutListStore();
   const [loading, setLoading] = useState(false);
 
   const removeCutList = (removeCutId: number) => {
@@ -353,21 +354,31 @@ function CutDialog() {
             <div className="flex justify-between w-full gap-4">
               <Button
                 onClick={() => {
-
                   fetchCut(Number(cutDialog?.cut_info.id))
-                  .then(()=>{
-                    removeCutList(Number(cutDialog?.cut_info.id));
-                    showToast("cut-dialog-success", "Hayvan kesme işlemi başarılı", "success");
-                    removeCutList(Number(cutDialog?.cut_info.id));                    
-                  })
-                  .catch((error)=>{
-                    showToast("cut-dialog-error", "Hayvan kesme işlemi sırasında hata oluştu", "error");
-                    console.error("error: ",error);
-                  })
-                  .finally(()=>{
-                    setLoading(false);
-                    setIsModalOpen(!isModalOpen);                    
-                  });
+                    .then((res) => {
+                      
+                      setCutTotalCount(res.data.cut.data.cut_list_count);
+
+                      removeCutList(Number(cutDialog?.cut_info.id));
+                      showToast(
+                        "cut-dialog-success",
+                        "Hayvan kesme işlemi başarılı",
+                        "success"
+                      );
+                      removeCutList(Number(cutDialog?.cut_info.id));
+                    })
+                    .catch((error) => {
+                      showToast(
+                        "cut-dialog-error",
+                        "Hayvan kesme işlemi sırasında hata oluştu",
+                        "error"
+                      );
+                      console.error("error: ", error);
+                    })
+                    .finally(() => {
+                      setLoading(false);
+                      setIsModalOpen(!isModalOpen);
+                    });
                 }}
                 disabled={loading}
                 variant="destructive"

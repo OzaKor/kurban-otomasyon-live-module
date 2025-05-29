@@ -105,7 +105,7 @@ const CutTable = () => {
             <TableBody>
               {/* cutLists map'ini AnimatePresence ile sarmalıyoruz */}
               <AnimatePresence initial={false}>
-                {cutLists.map((cutItem, index) => (
+                {cutLists.slice(0,10).map((cutItem, index) => (
                   <MotionTableRow
                     key={cutItem.tbody.id}
                     layout
