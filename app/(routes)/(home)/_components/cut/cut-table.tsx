@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -20,12 +20,10 @@ import useUserStore from "@/store/useUserStore";
 const MotionTableRow = motion.create(TableRow);
 
 const CutTable = () => {
-
-
-  const { cutLists, setCutLists,cutTotalCount } = useCutListStore();
+  const { cutLists, setCutLists, cutTotalCount } = useCutListStore();
 
   const { user } = useUserStore();
-  
+
   const headings = [
     {
       title: "Kesim Sırası",
@@ -49,29 +47,30 @@ const CutTable = () => {
     },
   ];
 
-  const removeCutList = (removeIndex: number) => {
-    const newCutLists = cutLists.filter((_, index) => index !== removeIndex);
+  const removeCutList = (removeCutId: number) => {
+    const newCutLists = cutLists.filter(
+      (cutList) => cutList.tbody.id !== removeCutId
+    );
     setCutLists(newCutLists);
   };
-
-  const openModal = (cutList: CutList, removeIndex: number) => {
+  const openModal = (cutList: CutList, removeCutId: number) => {
     const modal: Modal = cutList.modal;
-    removeCutList(removeIndex);
-    console.log("modal: ", modal); // buraya yapılacak işlemler gelecek
+    removeCutList(removeCutId);
+    // console.log("modal: ", modal); // buraya yapılacak işlemler gelecek
   };
 
   const ActionBtns = ({
     cutList,
-    removeIndex,
+    removeCutId,
   }: {
     cutList: CutList;
-    removeIndex: number;
+    removeCutId: number;
   }) => {
     return (
       <Button
         variant="empty"
         className="hover:cursor-pointer bg-transparent outline-none shadow-none group transition-colors"
-        onClick={() => openModal(cutList, removeIndex)}
+        onClick={() => openModal(cutList, removeCutId)}
       >
         <Icon
           icon="line-md:close-circle-twotone"
@@ -113,9 +112,9 @@ const CutTable = () => {
             <TableBody>
               {/* cutLists map'ini AnimatePresence ile sarmalıyoruz */}
               <AnimatePresence initial={false}>
-                {cutLists.splice(0, 10).map((cutList, index) => (
+                {cutLists.map((cutItem, index) => (
                   <MotionTableRow
-                    key={cutList.tbody.id}
+                    key={cutItem.tbody.id}
                     layout
                     initial={{ opacity: 0, y: -20, height: 0 }}
                     animate={{
@@ -139,17 +138,20 @@ const CutTable = () => {
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-5 text-base">
-                      {cutList.tbody.patoc}
+                      {cutItem.tbody.patoc}
                     </TableCell>
                     <TableCell className="py-4 px-5 text-base">
-                      {cutList.tbody.slaughter_date}
+                      {cutItem.tbody.slaughter_date}
                     </TableCell>
                     <TableCell className="py-4 px-5 text-base">
-                      {cutList.tbody.cut_type}
+                      {cutItem.tbody.cut_type}
                     </TableCell>
                     {user && user.role == "super_admin" && (
                       <TableCell className="text-right py-4 px-5">
-                        <ActionBtns cutList={cutList} removeIndex={index} />
+                        <ActionBtns
+                          cutList={cutItem}
+                          removeCutId={Number(cutItem.tbody.id)}
+                        />
                       </TableCell>
                     )}
                   </MotionTableRow>
