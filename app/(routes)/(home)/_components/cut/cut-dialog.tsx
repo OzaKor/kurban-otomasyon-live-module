@@ -29,7 +29,7 @@ function CutDialog() {
   const { user } = useUserStore();
   const { cutDialog, isModalOpen, setIsModalOpen, fetchCut } =
     useCutDialogStore();
-  const { cutLists, setCutLists, setCutTotalCount } = useCutListStore();
+  const { cutLists, setCutLists, setCutTotalCount,fetchCutLists } = useCutListStore();
   const [loading, setLoading] = useState(false);
 
   const removeCutList = (removeCutId: number) => {
@@ -356,6 +356,13 @@ function CutDialog() {
                 onClick={() => {
                   fetchCut(Number(cutDialog?.cut_info.id))
                     .then((res) => {
+
+                      console.log("cutLists: ",cutLists.length);
+
+                      if (cutLists.length < 10) {
+                        fetchCutLists(20);
+                      }
+                      
                       
                       setCutTotalCount(res.data.cut.data.cut_list_count);
 
