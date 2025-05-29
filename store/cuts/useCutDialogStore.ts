@@ -1,3 +1,4 @@
+import axios from "axios";
 import { create } from "zustand";
 
 export interface ApiDialogItem {
@@ -34,6 +35,7 @@ interface CutDialogStore {
   isModalOpen: boolean;
   setIsModalOpen: (isModalOpen: boolean) => void;
   setCutDialog: (cutDialog: ApiDialogItem) => void;
+  fetchCut: (cutId: string | number) => Promise<ApiDialogItem>;
 }
 
 const useCutDialogStore = create<CutDialogStore>((set) => ({
@@ -41,6 +43,23 @@ const useCutDialogStore = create<CutDialogStore>((set) => ({
   isModalOpen: false,
   setIsModalOpen: (isModalOpen: boolean) => set({ isModalOpen }),
   setCutDialog: (cutDialog: ApiDialogItem) => set({ cutDialog }),
+  fetchCut: async (cutId: string | number) => {
+    try {
+      const response = await axios.post(`/api/cuts/cut`, {
+        cut_id: cutId,
+      });
+      console.log("response: ", response.status);
+
+      if (response.status !== 200) {
+        throw new Error("Error fetching cut");
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching cut:", error);
+      throw error;
+    }
+  },
 }));
 
-export default useCutDialogStore
+export default useCutDialogStore;
