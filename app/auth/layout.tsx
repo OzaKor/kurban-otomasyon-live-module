@@ -4,6 +4,7 @@ import Footer from "@/components/layout/Footer";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { apiUrl } from "@/lib/axios";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -34,10 +35,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     return null;
   }
 
-  const apiUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.LARAVEL_API_URL
-      : "http://127.0.0.1:8000/api/v1";
+  
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto px-4 py-6">
