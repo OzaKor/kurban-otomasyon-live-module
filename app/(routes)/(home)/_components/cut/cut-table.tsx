@@ -83,7 +83,7 @@ const CutTable = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-0.5">
       <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
         {cutLists.length > 0 ? (
           <Table className="w-full">
@@ -92,7 +92,7 @@ const CutTable = () => {
                 {headings.map((heading) => (
                   <TableHead
                     key={heading.key}
-                    className={`text-white py-4 px-5 text-base font-medium ${
+                    className={`text-white py-4 px-5 text-base font-bold  ${
                       heading.className || ""
                     }`}
                   >

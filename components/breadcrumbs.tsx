@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,7 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-
+import useUserStore from "@/store/useUserStore";
 
 interface BreadcrumbsProps {
     items: {
@@ -17,8 +18,19 @@ interface BreadcrumbsProps {
 }
 
 const Breadcrumbs = ({items}: BreadcrumbsProps) => {
+  const {userToken} = useUserStore();
+const [isBreadcrumbs, setIsBreadcrumbs] = React.useState(false);
+
+useEffect(() => {
+    if(userToken){
+        setIsBreadcrumbs(true);
+    }
+}, [userToken]);
+
+
   return (
-    <Breadcrumb className="mb-6 p-6 rounded-md">
+    isBreadcrumbs && (
+      <Breadcrumb className="mb-6 p-6 rounded-md">
       <BreadcrumbList className="flex items-center gap-2">
         {items.map((item, index) => (
             <React.Fragment key={index}>
@@ -34,6 +46,7 @@ const Breadcrumbs = ({items}: BreadcrumbsProps) => {
         ))}
       </BreadcrumbList>
     </Breadcrumb>
+    )
   );
 };
 

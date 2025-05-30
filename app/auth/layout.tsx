@@ -4,7 +4,6 @@ import Footer from "@/components/layout/Footer";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { apiUrl } from "@/lib/axios";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -39,10 +38,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto px-4 py-6">
-        <div className="flex gap-2 flex-col">
-          <span className="text-xs">{process.env.NODE_ENV}</span>
-          <span className="text-xs">{apiUrl}</span>
-        </div>
         <div className="max-w-md mx-auto">{children}</div>
       </main>
       <Footer />

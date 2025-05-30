@@ -37,7 +37,7 @@ function CutDialog() {
     currentCutDialog,
     setCurrentCutDialog,
   } = useCutDialogStore();
-  const { cutLists, setCutLists, setCutTotalCount, fetchCutLists } =
+  const { cutLists, setCutLists, cutTotalCount, setCutTotalCount, fetchCutLists } =
     useCutListStore();
     const isİnitialMount = useRef(true);
     const { state } = useCutSettingStore();
@@ -80,7 +80,7 @@ function CutDialog() {
         setIsModalOpen(false);
       }
     }
-  }, [user, state, isModalOpen, cutDialog, currentCutDialog]);
+  }, [user, state, isModalOpen, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen]);
 
   useEffect(() => {
 
@@ -98,7 +98,7 @@ function CutDialog() {
       }, 5000);
       return () => clearInterval(timer);
     }
-  }, [user, state, isModalOpen, cutDialog, currentCutDialog]);
+  }, [user, state, isModalOpen, cutDialog, currentCutDialog, getDialog]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -416,6 +416,9 @@ function CutDialog() {
                       }
 
                       setCutTotalCount(res.data.cut.data.cut_list_count);
+
+                      console.log("cutTotalCount: ", cutTotalCount);
+                      
 
                       removeCutList(Number(cutDialog?.cut_info.id));
                       showToast(
