@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import useCutSettingStore from "@/store/cuts/useCutSettingStore";
@@ -35,7 +35,7 @@ const Cut = () => {
 
   let ComponentToRender = null;
   let componentKey = "cut-info-default";
-
+ 
   if (state.proccessStart) {
     componentKey = "cut-info-active";
     ComponentToRender = DynamicCutInfo;
@@ -46,6 +46,7 @@ const Cut = () => {
     componentKey = "cut-info-active";
     ComponentToRender = DynamicCutInfo;
   }
+
 
   const variants = {
     initial: { opacity: 0, y: 20 },

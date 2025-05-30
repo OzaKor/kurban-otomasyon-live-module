@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/layout/logo";
 import useUserStore from "@/store/useUserStore";
@@ -39,7 +39,8 @@ function CutDialog() {
   } = useCutDialogStore();
   const { cutLists, setCutLists, setCutTotalCount, fetchCutLists } =
     useCutListStore();
-  const { state } = useCutSettingStore();
+    const isİnitialMount = useRef(true);
+    const { state } = useCutSettingStore();
   const [loading, setLoading] = useState(false);
 
   const removeCutList = (removeCutId: number) => {
@@ -82,13 +83,22 @@ function CutDialog() {
   }, [user, state, isModalOpen, cutDialog, currentCutDialog]);
 
   useEffect(() => {
+
+    if (isİnitialMount.current) {
+      isİnitialMount.current = false;
+      if (!user || user.role !== "super_admin") {
+        getDialog();
+      }
+      return;
+    }
+
     if (!user || user.role !== "super_admin") {
       const timer = setInterval(() => {
         getDialog();
       }, 5000);
       return () => clearInterval(timer);
     }
-  }, [user]);
+  }, [user, state, isModalOpen, cutDialog, currentCutDialog]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
