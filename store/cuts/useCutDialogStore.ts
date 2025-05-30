@@ -36,9 +36,10 @@ interface CutDialogStore {
   setIsModalOpen: (isModalOpen: boolean) => void;
   setCutDialog: (cutDialog: ApiDialogItem) => void;
   fetchCut: (cutId: string | number) => Promise<AxiosResponse>;
+  fetchCutDialog: () => Promise<AxiosResponse>;
 }
 
-const useCutDialogStore = create<CutDialogStore>((set) => ({
+const useCutDialogStore = create<CutDialogStore>((set,get) => ({
   cutDialog: null,
   isModalOpen: false,
   setIsModalOpen: (isModalOpen: boolean) => set({ isModalOpen }),
@@ -56,6 +57,29 @@ const useCutDialogStore = create<CutDialogStore>((set) => ({
       return response;
     } catch (error) {
       console.error("Error fetching cut:", error);
+      throw error;
+    }
+  },
+  fetchCutDialog: async () => {
+    try {
+      const currentCutDialog = get().cutDialog;
+      console.log("currentCutDialog: ", currentCutDialog);
+      const response = await axios.get("/api/cuts/dialog",{
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      console.log("response: ", response);
+
+      if (response.status !== 200) {
+        throw new Error("Error fetching cut dialog");
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Error fetching cut dialog:", error);
       throw error;
     }
   },
