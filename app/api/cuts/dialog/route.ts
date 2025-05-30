@@ -13,6 +13,10 @@ export async function GET() {
             },
         });
 
+        if(response.status !== 200){
+            throw new Error("Kesim dialog bilgileri alınırken hata oluştu");
+        }
+
         return NextResponse.json(response.data);
     } catch (error) {
         console.error("Kesim dialog bilgileri alınırken hata oluştu:", error);

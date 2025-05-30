@@ -31,19 +31,29 @@ export interface ApiDialogItem {
 }
 
 interface CutDialogStore {
+  currentCutDialog: ApiDialogItem | null;
   cutDialog: ApiDialogItem | null;
   isModalOpen: boolean;
+  isUniqueRegistration: boolean;
   setIsModalOpen: (isModalOpen: boolean) => void;
+  setIsUniqueRegistration: (isUniqueRegistration: boolean) => void;
   setCutDialog: (cutDialog: ApiDialogItem) => void;
+  setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) => void;
   fetchCut: (cutId: string | number) => Promise<AxiosResponse>;
-  fetchCutDialog: () => Promise<AxiosResponse>;
+  fetchCutDialog: () => Promise<boolean>;
 }
 
-const useCutDialogStore = create<CutDialogStore>((set,get) => ({
+const useCutDialogStore = create<CutDialogStore>((set, get) => ({
+  currentCutDialog: null,
   cutDialog: null,
   isModalOpen: false,
+  isUniqueRegistration: true,
   setIsModalOpen: (isModalOpen: boolean) => set({ isModalOpen }),
+  setIsUniqueRegistration: (isUniqueRegistration: boolean) =>
+    set({ isUniqueRegistration }),
   setCutDialog: (cutDialog: ApiDialogItem) => set({ cutDialog }),
+  setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) =>
+    set({ currentCutDialog }),
   fetchCut: async (cutId: string | number) => {
     try {
       const response = await axios.post(`/api/cuts/slaughter-animal`, {
@@ -62,25 +72,33 @@ const useCutDialogStore = create<CutDialogStore>((set,get) => ({
   },
   fetchCutDialog: async () => {
     try {
-      const currentCutDialog = get().cutDialog;
-      console.log("currentCutDialog: ", currentCutDialog);
-      const response = await axios.get("/api/cuts/dialog",{
+      const response = await axios.get<AxiosResponse>("/api/cuts/dialog", {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
       });
 
-      console.log("response: ", response);
-
       if (response.status !== 200) {
         throw new Error("Error fetching cut dialog");
       }
 
-      return response;
+      const dt = response.data;
+      const dialogItem: ApiDialogItem = dt.data;
+      if (get().currentCutDialog===null) {
+        set({
+          currentCutDialog:dialogItem
+        })
+        
+      }
+      set({
+        cutDialog: dialogItem,
+      });
+
+      return true;
     } catch (error) {
       console.error("Error fetching cut dialog:", error);
-      throw error;
+      return false;
     }
   },
 }));
