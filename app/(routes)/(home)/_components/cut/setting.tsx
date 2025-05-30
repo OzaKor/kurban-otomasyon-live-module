@@ -11,12 +11,14 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
+import useCutListStore from "@/store/cuts/useCutListSrore";
 
 const Setting = () => {
   const { userToken } = useUserStore();
   const { state, setState } = useCutSettingStore();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { fetchCutLists } = useCutListStore();
 
   const setUpdate = (key: string) => {
     setState((prev) => {
@@ -62,20 +64,9 @@ const Setting = () => {
       }
     });
     setMessage("");
-    showToast(
-      "success",
-      "Kesim ayarları güncellendi",
-      "success",
-      undefined,
-      undefined,
-      "top-center"
-    );
   };
   const handleProcessCut = (key: string) => {
     setLoading(true);
-
-    setUpdate(key);
-
     const data = {
       message,
       key,
@@ -90,12 +81,24 @@ const Setting = () => {
       })
       .then(() => {
         console.log("Kesim ayarları güncellendi");
+        showToast(
+          "success",
+          "Kesim ayarları güncellendi",
+          "success",
+          undefined,
+          undefined,
+          "top-center"
+        );
+        setUpdate(key);
       })
       .catch((error) => {
         console.error("Kesim ayarları hatası: ", error);
       })
       .finally(() => {
         setLoading(false);
+        if(key==="start" || key==="continue"){
+          fetchCutLists(20);
+        }
       });
   };
 

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/layout/logo";
 import useUserStore from "@/store/useUserStore";
@@ -24,12 +24,23 @@ import {
 import useCutDialogStore from "@/store/cuts/useCutDialogStore";
 import useCutListStore from "@/store/cuts/useCutListSrore";
 import showToast from "@/lib/showToast";
+import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 
 function CutDialog() {
   const { user } = useUserStore();
-  const { cutDialog, isModalOpen, setIsModalOpen, fetchCut } =
-    useCutDialogStore();
-  const { cutLists, setCutLists, setCutTotalCount,fetchCutLists } = useCutListStore();
+  const {
+    cutDialog,
+    isModalOpen,
+    setIsModalOpen,
+    fetchCut,
+    fetchCutDialog,
+    currentCutDialog,
+    setCurrentCutDialog,
+  } = useCutDialogStore();
+  const { cutLists, setCutLists, setCutTotalCount, fetchCutLists } =
+    useCutListStore();
+    const isİnitialMount = useRef(true);
+    const { state } = useCutSettingStore();
   const [loading, setLoading] = useState(false);
 
   const removeCutList = (removeCutId: number) => {
@@ -39,14 +50,55 @@ function CutDialog() {
     setCutLists(newCutLists);
   };
 
-  // useEffect(() => {
-  //   if (!user || user.role !== "super_admin") {
-  //     const timer = setInterval(() => {
-  //       setOpen(!open);
-  //     }, 5000);
-  //     return () => clearInterval(timer);
-  //   }
-  // }, [user, open]);
+  const getDialog = useCallback(async () => {
+    if (user?.role != "super_admin") {
+      if (state.proccessEnd && state.processStop) {
+        if (!isModalOpen) {
+          const fetchDialog = await fetchCutDialog();
+          if (fetchDialog) {
+            if (currentCutDialog === null && cutDialog === null) {
+              setIsModalOpen(true);
+            } else {
+              if (
+                currentCutDialog &&
+                cutDialog &&
+                currentCutDialog.cut_info.slaughter_date !==
+                  cutDialog.cut_info.slaughter_date
+              ) {
+                setCurrentCutDialog(cutDialog);
+                setIsModalOpen(true);
+              }
+            }
+
+            setTimeout(() => {
+              setIsModalOpen(false);
+            }, 2500);
+
+          }
+        }
+      } else {
+        setIsModalOpen(false);
+      }
+    }
+  }, [user, state, isModalOpen, cutDialog, currentCutDialog]);
+
+  useEffect(() => {
+
+    if (isİnitialMount.current) {
+      isİnitialMount.current = false;
+      if (!user || user.role !== "super_admin") {
+        getDialog();
+      }
+      return;
+    }
+
+    if (!user || user.role !== "super_admin") {
+      const timer = setInterval(() => {
+        getDialog();
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [user, state, isModalOpen, cutDialog, currentCutDialog]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -357,14 +409,12 @@ function CutDialog() {
                   setLoading(true);
                   fetchCut(Number(cutDialog?.cut_info.id))
                     .then((res) => {
-
-                      console.log("cutLists: ",cutLists.length);
+                      console.log("cutLists: ", cutLists.length);
 
                       if (cutLists.length < 10) {
                         fetchCutLists(20);
                       }
-                      
-                      
+
                       setCutTotalCount(res.data.cut.data.cut_list_count);
 
                       removeCutList(Number(cutDialog?.cut_info.id));
