@@ -34,9 +34,17 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     return null;
   }
 
+  const apiUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.LARAVEL_API_URL
+      : "http://127.0.0.1:8000/api/v1";
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto px-4 py-6">
+        <div className="flex gap-2 flex-col">
+          <span className="text-xs">{process.env.NODE_ENV}</span>
+          <span className="text-xs">{apiUrl}</span>
+        </div>
         <div className="max-w-md mx-auto">{children}</div>
       </main>
       <Footer />
