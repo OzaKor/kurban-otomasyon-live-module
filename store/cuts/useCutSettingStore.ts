@@ -29,20 +29,20 @@ const useCutSettingStore = create<CutSettingStore>()(
         set((store) => ({
           state: typeof state === "function" ? state(store.state) : state,
         })),
-  fetchCutSetting: async () => {
-    const response = await axios.get("/api/cuts/settings");
-    const process = await response.data;
+      fetchCutSetting: async () => {
+        const response = await axios.get("/api/cuts/settings");
+        const process = await response.data;
 
-    set({
-      state: {
-        proccessStart: process.process_start,
-        proccessEnd: process.process_end,
-        processContinue: process.process_continue,
-        processStop: process.process_stop,
+        set({
+          state: {
+            proccessStart: process.process_start,
+            proccessEnd: process.process_end,
+            processContinue: process.process_continue,
+            processStop: process.process_stop,
+          },
+        });
       },
-    });
-  },
-  clear: () => set({ state: initialState }),
+      clear: () => set({ state: initialState }),
     }),
     {
       name: "cut-setting-storage",
