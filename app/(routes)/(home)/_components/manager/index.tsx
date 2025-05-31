@@ -53,7 +53,7 @@ const Manager = () => {
           </AccordionItem>
         ))}
       </Accordion>
-      <div className="mt-6">
+      <div className="mt-3.5">
         <Cut />
       </div>
     </div>

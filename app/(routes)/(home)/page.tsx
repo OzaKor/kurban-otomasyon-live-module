@@ -16,8 +16,8 @@ const Home = () => {
             label: "Kesim Listesi",
         },
       ]} />
-      <Card className="py-2">
-        <CardContent className="p-4">
+      <Card className="py-0">
+        <CardContent className="p-1.5">
           <Main />
         </CardContent>
       </Card>
