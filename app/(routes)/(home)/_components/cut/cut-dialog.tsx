@@ -408,8 +408,7 @@ function CutDialog() {
                 onClick={() => {
                   setLoading(true);
                   fetchCut(Number(cutDialog?.cut_info.id))
-                    .then((res) => {
-                      console.log("cutLists: ", cutLists.length);
+                    .then(() => {
 
                       if (cutLists.length < 10) {
                         fetchCutLists(20);
