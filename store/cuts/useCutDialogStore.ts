@@ -2,6 +2,12 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import axios, { AxiosResponse } from "axios";
 
+interface CutDialogApiResponse {
+  process: boolean;
+  message: string;
+  data: ApiDialogItem;
+}
+
 export interface ApiDialogItem {
   cut_info: {
     id: string | number;
@@ -40,7 +46,7 @@ interface CutDialogStore {
   setIsUniqueRegistration: (isUniqueRegistration: boolean) => void;
   setCutDialog: (cutDialog: ApiDialogItem) => void;
   setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) => void;
-  fetchCut: (cutId: string | number) => Promise<AxiosResponse>;
+  fetchCut: (cutId: string | number) => Promise<AxiosResponse<CutDialogApiResponse>>;
   fetchCutDialog: () => Promise<boolean>;
 }
 
@@ -67,13 +73,14 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
 
       return response;
     } catch (error) {
-      console.error("Error fetching cut:", error);
+      console.error("Kesim detayları alınırken hata:", error);
       throw error;
     }
   },
+
   fetchCutDialog: async () => {
     try {
-      const response = await axios.get<AxiosResponse>("/api/cuts/dialog", {
+      const response = await axios.get<CutDialogApiResponse>('/api/cuts/dialog', {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -81,24 +88,27 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
       });
 
       if (response.status !== 200) {
-        throw new Error("Error fetching cut dialog");
+        throw new Error("Kesim detayları alınırken hata oluştu");
       }
 
-      const dt = response.data;
-      const dialogItem: ApiDialogItem = dt.data;
-      if (get().currentCutDialog===null) {
+      const { data,process } = response.data;
+
+      if (process) {
+           if (get().currentCutDialog === null) {
         set({
-          currentCutDialog:dialogItem
-        })
-        
+          currentCutDialog: data
+        });
       }
+      
       set({
-        cutDialog: dialogItem,
+        cutDialog: data,
       });
+      }
+   
 
-      return true;
+      return process;
     } catch (error) {
-      console.error("Error fetching cut dialog:", error);
+      console.error("Kesim detayları alınamadı:", error);
       return false;
     }
   },
