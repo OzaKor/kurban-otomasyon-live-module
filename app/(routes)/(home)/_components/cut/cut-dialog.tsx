@@ -37,7 +37,7 @@ function CutDialog() {
     currentCutDialog,
     setCurrentCutDialog,
   } = useCutDialogStore();
-  const { cutLists, setCutLists, cutTotalCount, setCutTotalCount, fetchCutLists } =
+  const { cutLists, setCutLists, fetchCutLists } =
     useCutListStore();
     const isİnitialMount = useRef(true);
     const { state } = useCutSettingStore();
@@ -415,9 +415,7 @@ function CutDialog() {
                         fetchCutLists(20);
                       }
 
-                      setCutTotalCount(res.data.cut.data.cut_list_count);
-
-                      console.log("cutTotalCount: ", cutTotalCount);
+          
                       
 
                       removeCutList(Number(cutDialog?.cut_info.id));
