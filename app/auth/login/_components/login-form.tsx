@@ -21,18 +21,31 @@ import { useRouter } from "next/navigation";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
 
+
+interface  defaultValuesInterface {
+  email: string;
+  password: string;
+}
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const useUser = useUserStore();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  const defaultValues: defaultValuesInterface = {
+    email: "",
+    password: "",
+  };
+
+  if (process.env.NODE_ENV === "development") {
+    defaultValues.email = "super_admin@admin.com";
+    defaultValues.password = "ozkr#.Gs#";
+  }
+
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
-    defaultValues: {
-      email: "super_admin@admin.com",
-      password: "ozkr#.Gs#",
-    },
+    defaultValues,
   });
 
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
@@ -145,7 +158,7 @@ const LoginForm = () => {
         />
         <Button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+          className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer scale-95 hover:scale-105 transition-all duration-300"
           disabled={isLoading}
         >
           {isLoading && (
