@@ -35,7 +35,8 @@ const Offline = () => {
       } else {
         setStatus('offline');
       }
-    } catch (error) {
+    } catch (_error) {
+      console.log(_error);
       setStatus('offline');
     }
   };
