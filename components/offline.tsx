@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { WifiOff, Wifi, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const CONNECTION_CHECK_DELAY = 2000; // 2 saniye bekle
 
@@ -20,18 +21,14 @@ const Offline = () => {
     
     // Sunucuya basit bir istek atarak bağlantıyı kontrol et
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 saniye zaman aşımı
-      
-      const response = await fetch('/api/health', {
-        method: 'HEAD',
-        cache: 'no-store',
-        signal: controller.signal
+      const response = await axios.head('/api/health', {
+        timeout: 3000, // 3 saniye zaman aşımı
+        headers: {
+          'Cache-Control': 'no-store'
+        }
       });
       
-      clearTimeout(timeoutId);
-      
-      if (response.ok) {
+      if (response.status === 200) {
         setStatus('online');
         // 2 saniye bekle ve sayfayı yenile
         setTimeout(() => window.location.reload(), 2000);
