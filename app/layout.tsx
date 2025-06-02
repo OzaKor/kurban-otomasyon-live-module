@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import React from "react";
-import { Toaster } from "@/components/ui/sonner";
-import VerifyTokenProvider from "@/providers/verifyTokenProvider";
+import OfflineProvider from "@/providers/offlineProvider";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -33,8 +32,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${montserrat.variable} antialiased`}>
-        <VerifyTokenProvider>{children}</VerifyTokenProvider>
-        <Toaster richColors />
+        <OfflineProvider>{children}</OfflineProvider>
       </body>
     </html>
   );
