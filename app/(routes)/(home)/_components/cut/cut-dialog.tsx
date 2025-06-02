@@ -157,7 +157,7 @@ function CutDialog() {
         if (!user || user.role !== "super_admin") {
           getDialog();
         }
-      }, 100); // Küçük bir gecikme ile
+      }, 1500); // Küçük bir gecikme ile
       
       return () => clearTimeout(checkTimeout);
     }
