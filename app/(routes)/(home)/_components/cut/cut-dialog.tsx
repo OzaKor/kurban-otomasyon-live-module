@@ -56,36 +56,34 @@ function CutDialog() {
   const getDialog = useCallback(async () => {
     if (user?.role != "super_admin") {
       if (state.proccessEnd && state.processStop) {
-        if (!isModalOpen) {
-          const fetchDialog = await fetchCutDialog();
-          if (fetchDialog) {
-            // Yeni kesim kontrolü - ID bazlı
-            if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
-              // Bu kesim daha önce gösterilmemiş
-              shownCutIds.current.add(cutDialog.cut_info.id);
-              setCurrentCutDialog(cutDialog);
-              setIsModalOpen(true);
-              
-              setTimeout(() => {
-                setIsModalOpen(false);
-              }, 3000);
-            } else if (!currentCutDialog && cutDialog) {
-              // İlk kez modal açılıyor
-              shownCutIds.current.add(cutDialog.cut_info.id);
-              setCurrentCutDialog(cutDialog);
-              setIsModalOpen(true);
-              
-              setTimeout(() => {
-                setIsModalOpen(false);
-              }, 3000);
-            }
+        const fetchDialog = await fetchCutDialog();
+        if (fetchDialog) {
+          // Yeni kesim kontrolü - ID bazlı
+          if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
+            // Bu kesim daha önce gösterilmemiş
+            shownCutIds.current.add(cutDialog.cut_info.id);
+            setCurrentCutDialog(cutDialog);
+            setIsModalOpen(true);
+            
+            setTimeout(() => {
+              setIsModalOpen(false);
+            }, 2500);
+          } else if (!currentCutDialog && cutDialog) {
+            // İlk kez modal açılıyor
+            shownCutIds.current.add(cutDialog.cut_info.id);
+            setCurrentCutDialog(cutDialog);
+            setIsModalOpen(true);
+            
+            setTimeout(() => {
+              setIsModalOpen(false);
+            }, 2500);
           }
         }
       } else {
         setIsModalOpen(false);
       }
     }
-  }, [user, state, isModalOpen, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen]);
+  }, [user, state, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen]);
 
   // Belirli aralıklarla gösterilen kesim listesini temizle (örn: 1 saat)
   useEffect(() => {
@@ -96,6 +94,21 @@ function CutDialog() {
     return () => clearInterval(clearShownCuts);
   }, []);
 
+  // Modal kapandığında hemen kontrol et
+  useEffect(() => {
+    if (!isModalOpen && !isInitialMount.current) {
+      // Modal kapandı, hemen yeni kesim var mı kontrol et
+      const checkTimeout = setTimeout(() => {
+        if (!user || user.role !== "super_admin") {
+          getDialog();
+        }
+      }, 1500); // Küçük bir gecikme ile
+      
+      return () => clearTimeout(checkTimeout);
+    }
+  }, [isModalOpen, user, getDialog]);
+
+  // Polling logic
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -105,12 +118,15 @@ function CutDialog() {
       return;
     }
 
+    // Modal açıkken veya admin ise polling yapma
+    if (isModalOpen || (user && user.role === "super_admin")) {
+      return;
+    }
+
     if (!user || user.role !== "super_admin") {
       const timer = setInterval(() => {
-      if (!isModalOpen) {
         getDialog();
-      }
-      }, 1500);
+      }, 5000);
       return () => clearInterval(timer);
     }
   }, [user, state, isModalOpen, cutDialog, currentCutDialog, getDialog]);
