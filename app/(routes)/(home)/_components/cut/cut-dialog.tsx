@@ -1,3 +1,4 @@
+// app/(routes)/(home)/_components/cut/cut-dialog.tsx
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -37,11 +38,13 @@ function CutDialog() {
     currentCutDialog,
     setCurrentCutDialog,
   } = useCutDialogStore();
-  const { cutLists, setCutLists, fetchCutLists } =
-    useCutListStore();
-    const isİnitialMount = useRef(true);
-    const { state } = useCutSettingStore();
+  const { cutLists, setCutLists, fetchCutLists } = useCutListStore();
+  const isInitialMount = useRef(true);
+  const { state } = useCutSettingStore();
   const [loading, setLoading] = useState(false);
+  
+  // Gösterilen kesim ID'lerini saklamak için
+  const shownCutIds = useRef<Set<string | number>>(new Set());
 
   const removeCutList = (removeCutId: number) => {
     const newCutLists = cutLists.filter(
@@ -56,24 +59,26 @@ function CutDialog() {
         if (!isModalOpen) {
           const fetchDialog = await fetchCutDialog();
           if (fetchDialog) {
-            if (currentCutDialog === null && cutDialog === null) {
+            // Yeni kesim kontrolü - ID bazlı
+            if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
+              // Bu kesim daha önce gösterilmemiş
+              shownCutIds.current.add(cutDialog.cut_info.id);
+              setCurrentCutDialog(cutDialog);
               setIsModalOpen(true);
-            } else {
-              if (
-                currentCutDialog &&
-                cutDialog &&
-                currentCutDialog.cut_info.slaughter_date !==
-                  cutDialog.cut_info.slaughter_date
-              ) {
-                setCurrentCutDialog(cutDialog);
-                setIsModalOpen(true);
-              }
+              
+              setTimeout(() => {
+                setIsModalOpen(false);
+              }, 3000);
+            } else if (!currentCutDialog && cutDialog) {
+              // İlk kez modal açılıyor
+              shownCutIds.current.add(cutDialog.cut_info.id);
+              setCurrentCutDialog(cutDialog);
+              setIsModalOpen(true);
+              
+              setTimeout(() => {
+                setIsModalOpen(false);
+              }, 3000);
             }
-
-            setTimeout(() => {
-              setIsModalOpen(false);
-            }, 2500);
-
           }
         }
       } else {
@@ -82,10 +87,18 @@ function CutDialog() {
     }
   }, [user, state, isModalOpen, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen]);
 
+  // Belirli aralıklarla gösterilen kesim listesini temizle (örn: 1 saat)
   useEffect(() => {
+    const clearShownCuts = setInterval(() => {
+      shownCutIds.current.clear();
+    }, 3600000); // 1 saat
 
-    if (isİnitialMount.current) {
-      isİnitialMount.current = false;
+    return () => clearInterval(clearShownCuts);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
       if (!user || user.role !== "super_admin") {
         getDialog();
       }
@@ -94,8 +107,10 @@ function CutDialog() {
 
     if (!user || user.role !== "super_admin") {
       const timer = setInterval(() => {
+      if (!isModalOpen) {
         getDialog();
-      }, 5000);
+      }
+      }, 1500);
       return () => clearInterval(timer);
     }
   }, [user, state, isModalOpen, cutDialog, currentCutDialog, getDialog]);
@@ -119,23 +134,6 @@ function CutDialog() {
                   <span className="text-xs text-gray-400">Kesim Tarihi</span>
                 </div>
               ))}
-            {/* {!user || user.role !== "super_admin" ? (
-              <div className="flex flex-col items-center gap-2">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
-                  {fakeData.cut_info.slaughter_date}
-                </h1>
-                <span className="text-xs text-gray-400">Kesim Tarihi</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <Logo
-                  src="/images/ozkr-logo.png"
-                  width={600}
-                  height={600}
-                  className="h-12"
-                />
-              </div>
-            )} */}
           </DialogTitle>
         </DialogHeader>
 
@@ -388,14 +386,6 @@ function CutDialog() {
                   className="h-28"
                 />
               </div>
-              // <div className="mt-10 border-t border-gray-200 pt-8">
-              //   <Logo
-              //     src="/images/ozkr-logo.png"
-              //     width={2400}
-              //     height={1200}
-              //     className="h-28"
-              //   />
-              // </div>
             )}
           </div>
         </DialogDescription>
@@ -409,13 +399,9 @@ function CutDialog() {
                   setLoading(true);
                   fetchCut(Number(cutDialog?.cut_info.id))
                     .then(() => {
-
                       if (cutLists.length < 10) {
                         fetchCutLists(20);
                       }
-
-          
-                      
 
                       removeCutList(Number(cutDialog?.cut_info.id));
                       showToast(
