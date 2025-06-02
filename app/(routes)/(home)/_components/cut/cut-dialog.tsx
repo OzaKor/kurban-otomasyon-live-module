@@ -1,6 +1,6 @@
-// app/(routes)/(home)/_components/cut/cut-dialog.tsx
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Howl } from "howler";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/layout/logo";
 import useUserStore from "@/store/useUserStore";
@@ -45,6 +45,59 @@ function CutDialog() {
   
   // Gösterilen kesim ID'lerini saklamak için
   const shownCutIds = useRef<Set<string | number>>(new Set());
+  
+  // Ses için ref
+  const audioRef = useRef<Howl | null>(null);
+
+  // Component mount olduğunda audio elementi oluştur
+  useEffect(() => {
+    // ... Howl instance creation
+    audioRef.current = new Howl({
+      src: ["/sound/ding-dong.mp3"],
+      loop: false,
+      html5: true,
+      onplayerror: (id, error) => {
+        console.error('Ses çalma hatası:', error);
+        // ... (yukarıdaki gibi hata yönetimi)
+      },
+      onloaderror: (id, error) => {
+        console.error('Ses yükleme hatası:', error);
+      }
+    });
+  
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.unload(); // Howler örneğini ve kaynaklarını temizler
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Ses çalma fonksiyonu
+  const playNotificationSound = useCallback(() => {
+    if (audioRef.current) {
+      if (Howler.ctx && Howler.ctx.state === 'suspended') {
+        Howler.ctx.resume().then(() => {
+         if (audioRef.current) {
+          audioRef.current.seek(0);
+          audioRef.current.play();
+         }
+        }).catch(e => console.error("Audio context resume error:", e));
+      } else {
+        if (audioRef.current) {
+          audioRef.current.seek(0);
+          audioRef.current.play();
+        }
+      }
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.unload();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const removeCutList = (removeCutId: number) => {
     const newCutLists = cutLists.filter(
@@ -64,6 +117,7 @@ function CutDialog() {
             shownCutIds.current.add(cutDialog.cut_info.id);
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
+            playNotificationSound(); // Ses çal
             
             setTimeout(() => {
               setIsModalOpen(false);
@@ -73,6 +127,7 @@ function CutDialog() {
             shownCutIds.current.add(cutDialog.cut_info.id);
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
+            playNotificationSound(); // Ses çal
             
             setTimeout(() => {
               setIsModalOpen(false);
@@ -83,7 +138,7 @@ function CutDialog() {
         setIsModalOpen(false);
       }
     }
-  }, [user, state, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen]);
+  }, [user, state, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen, playNotificationSound]);
 
   // Belirli aralıklarla gösterilen kesim listesini temizle (örn: 1 saat)
   useEffect(() => {
@@ -102,7 +157,7 @@ function CutDialog() {
         if (!user || user.role !== "super_admin") {
           getDialog();
         }
-      }, 1500); // Küçük bir gecikme ile
+      }, 100); // Küçük bir gecikme ile
       
       return () => clearTimeout(checkTimeout);
     }
