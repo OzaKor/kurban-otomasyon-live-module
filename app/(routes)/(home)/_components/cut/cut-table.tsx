@@ -31,15 +31,10 @@ const CutTable = () => {
       title: "Kesim Sırası",
       key: "index",
       className: "w-[100px]",
-    },
+    },    
     {
-      title: "Patok",
-      key: "patoc",
-      className: "w-[100px]",
-    },
-    {
-      title: "Kesim Zamanı",
-      key: "time",
+      title: "Adı Soyadı",
+      key: "name",
       className: "w-[100px]",
     },
     {
@@ -81,6 +76,9 @@ const CutTable = () => {
       className: "w-[100px] text-right pr-10",
     });
   }
+
+  console.log(cutLists);
+  
 
   return (
     <div className="p-0.5">
@@ -131,11 +129,9 @@ const CutTable = () => {
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-5 text-base">
-                      {cutItem.tbody.patoc}
+                      {cutItem.tbody.customer}
                     </TableCell>
-                    <TableCell className="py-4 px-5 text-base">
-                      {cutItem.tbody.slaughter_date}
-                    </TableCell>
+                  
                     <TableCell className="py-4 px-5 text-base">
                       {cutItem.tbody.cut_type}
                     </TableCell>
@@ -153,7 +149,7 @@ const CutTable = () => {
             <TableFooter>
               <TableRow className="bg-gray-100 hover:bg-gray-100 border-t">
                 <TableCell
-                  colSpan={user && user.role == "super_admin" ? 4 : 3}
+                  colSpan={user && user.role == "super_admin" ? 3 : 2}
                   className="py-4 px-5 font-medium text-base"
                 >
                   Toplam Kesilecek Hayvan Sayısı

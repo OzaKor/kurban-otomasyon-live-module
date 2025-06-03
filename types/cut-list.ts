@@ -30,8 +30,7 @@ export interface Modal {
 export interface Tbody {
   id: number | string;
   cutting_sequence: number;
-  patoc: string;
-  slaughter_date: string;
+  customer: string;
   cut_type: string;
 }
 

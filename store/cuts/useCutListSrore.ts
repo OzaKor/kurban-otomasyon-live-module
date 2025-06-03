@@ -1,15 +1,9 @@
 import { create } from "zustand";
-import CutList from "@/types/cut-list";
+import CutList, { Tbody } from "@/types/cut-list";
 import axios from "@/lib/axios";
 
 interface RawApiCutItem {
-  tbody: {
-    id: string | number;
-    cutting_sequence: string | number;
-    patoc: string;
-    slaughter_date: string;
-    cut_type: string;
-  };
+  tbody: Tbody
   modal: {
     cut_info: {
       id: string | number;
@@ -92,8 +86,7 @@ const useCutListStore = create<CutListStore>((set, get) => ({
             tbody: {
               id: tbody?.id,
               cutting_sequence: Number(tbody?.cutting_sequence),
-              patoc: tbody?.patoc,
-              slaughter_date: tbody?.slaughter_date,
+              customer: tbody.customer,
               cut_type: tbody?.cut_type,
             },
             modal: {
