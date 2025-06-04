@@ -74,8 +74,6 @@ const CutTable = () => {
     });
   }
 
-  console.log(cutLists);
-
   const quotations = [
     "Kurban, Allah'a gönülden bir yöneliştir.",
     750,
