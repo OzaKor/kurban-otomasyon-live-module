@@ -34,6 +34,7 @@ function CutDialog() {
     isModalOpen,
     setIsModalOpen,
     fetchCut,
+    fetchCutSkip,
     fetchCutDialog,
     currentCutDialog,
     setCurrentCutDialog,
@@ -42,10 +43,10 @@ function CutDialog() {
   const isInitialMount = useRef(true);
   const { state } = useCutSettingStore();
   const [loading, setLoading] = useState(false);
-  
+
   // Gösterilen kesim ID'lerini saklamak için
   const shownCutIds = useRef<Set<string | number>>(new Set());
-  
+
   // Ses için ref
   const audioRef = useRef<Howl | null>(null);
 
@@ -57,14 +58,14 @@ function CutDialog() {
       loop: false,
       html5: true,
       onplayerror: (id, error) => {
-        console.error('Ses çalma hatası:', error);
+        console.error("Ses çalma hatası:", error);
         // ... (yukarıdaki gibi hata yönetimi)
       },
       onloaderror: (id, error) => {
-        console.error('Ses yükleme hatası:', error);
-      }
+        console.error("Ses yükleme hatası:", error);
+      },
     });
-  
+
     return () => {
       if (audioRef.current) {
         audioRef.current.unload(); // Howler örneğini ve kaynaklarını temizler
@@ -76,13 +77,16 @@ function CutDialog() {
   // Ses çalma fonksiyonu
   const playNotificationSound = useCallback(() => {
     if (audioRef.current) {
-      if (Howler.ctx && Howler.ctx.state === 'suspended') {
-        Howler.ctx.resume().then(() => {
-         if (audioRef.current) {
-          audioRef.current.seek(0);
-          audioRef.current.play();
-         }
-        }).catch(e => console.error("Audio context resume error:", e));
+      if (Howler.ctx && Howler.ctx.state === "suspended") {
+        Howler.ctx
+          .resume()
+          .then(() => {
+            if (audioRef.current) {
+              audioRef.current.seek(0);
+              audioRef.current.play();
+            }
+          })
+          .catch((e) => console.error("Audio context resume error:", e));
       } else {
         if (audioRef.current) {
           audioRef.current.seek(0);
@@ -118,7 +122,7 @@ function CutDialog() {
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
             playNotificationSound(); // Ses çal
-            
+
             setTimeout(() => {
               setIsModalOpen(false);
             }, 2500);
@@ -128,7 +132,7 @@ function CutDialog() {
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
             playNotificationSound(); // Ses çal
-            
+
             setTimeout(() => {
               setIsModalOpen(false);
             }, 2500);
@@ -138,7 +142,16 @@ function CutDialog() {
         setIsModalOpen(false);
       }
     }
-  }, [user, state, cutDialog, currentCutDialog, fetchCutDialog, setCurrentCutDialog, setIsModalOpen, playNotificationSound]);
+  }, [
+    user,
+    state,
+    cutDialog,
+    currentCutDialog,
+    fetchCutDialog,
+    setCurrentCutDialog,
+    setIsModalOpen,
+    playNotificationSound,
+  ]);
 
   // Belirli aralıklarla gösterilen kesim listesini temizle (örn: 1 saat)
   useEffect(() => {
@@ -158,7 +171,7 @@ function CutDialog() {
           getDialog();
         }
       }, 1500); // Küçük bir gecikme ile
-      
+
       return () => clearTimeout(checkTimeout);
     }
   }, [isModalOpen, user, getDialog]);
@@ -465,80 +478,140 @@ function CutDialog() {
         {user && user.role === "super_admin" && (
           <DialogFooter className="px-6 lg:px-8 pb-6">
             <div className="flex justify-between w-full gap-4">
-              <Button
-                onClick={() => {
-                  setLoading(true);
-                  fetchCut(Number(cutDialog?.cut_info.id))
-                    .then(() => {
-                      if (cutLists.length < 10) {
-                        fetchCutLists(20);
-                      }
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => {
+                    setLoading(true);
+                    fetchCut(Number(cutDialog?.cut_info.id))
+                      .then(() => {
+                        if (cutLists.length < 10) {
+                          fetchCutLists(20);
+                        }
 
-                      removeCutList(Number(cutDialog?.cut_info.id));
-                      showToast(
-                        "cut-dialog-success",
-                        "Hayvan kesme işlemi başarılı",
-                        "success"
-                      );
-                      removeCutList(Number(cutDialog?.cut_info.id));
-                    })
-                    .catch((error) => {
-                      showToast(
-                        "cut-dialog-error",
-                        "Hayvan kesme işlemi sırasında hata oluştu",
-                        "error"
-                      );
-                      console.error("error: ", error);
-                    })
-                    .finally(() => {
-                      setLoading(false);
-                      setIsModalOpen(!isModalOpen);
-                    });
-                }}
-                disabled={loading}
-                variant="destructive"
-                size="lg"
-                className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
-              >
-                {loading ? (
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
+                        removeCutList(Number(cutDialog?.cut_info.id));
+                        showToast(
+                          "cut-dialog-success",
+                          "Hayvan kesme işlemi başarılı",
+                          "success"
+                        );
+                      })
+                      .catch((error) => {
+                        showToast(
+                          "cut-dialog-error",
+                          "Hayvan kesme işlemi sırasında hata oluştu",
+                          "error"
+                        );
+                        console.error("error: ", error);
+                      })
+                      .finally(() => {
+                        setLoading(false);
+                        setIsModalOpen(!isModalOpen);
+                      });
+                  }}
+                  disabled={loading}
+                  variant="destructive"
+                  size="lg"
+                  className="flex items-center gap-3 hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500 hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
+                >
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
-                <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
-              </Button>
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                  <span>{loading ? "İşleniyor..." : "Hayvanı Kes"}</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="hover:opacity-80 transition-all hover:scale-105 hover:shadow-lg hover:shadow-secondary hover:cursor-pointer active:scale-100 active:shadow-none active:opacity-100"
+                  onClick={() => {
+                    setLoading(true);
+                    fetchCutSkip(Number(cutDialog?.cut_info.id))
+                      .then(() => {
+                        if (cutLists.length < 10) {
+                          fetchCutLists(20);
+                        }
+
+                        removeCutList(Number(cutDialog?.cut_info.id));
+                        showToast(
+                          "cut-dialog-success",
+                          "Hayvan kesmi atlandı",
+                          "success"
+                        );
+                      })
+                      .catch((error) => {
+                        showToast(
+                          "cut-dialog-error",
+                          "Hayvan kesmi atlanırken hata oluştu",
+                          "error"
+                        );
+                        console.error("error: ", error);
+                      })
+                      .finally(() => {
+                        setLoading(false);
+                        setIsModalOpen(!isModalOpen);
+                      });
+                  }}
+                >
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    "Kesimi Atla"
+                  )}
+                </Button>
+              </div>
 
               <DialogClose asChild>
                 <Button
