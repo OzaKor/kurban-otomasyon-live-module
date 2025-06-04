@@ -43,19 +43,15 @@ interface ApiCutListsParentResponse {
 
 interface CutListStore {
   cutLists: CutList[];
-  cutTotalCount: number;
   setCutLists: (cutLists: CutList[]) => void;
-  setCutTotalCount: (cutTotalCount: number) => void;
   fetchCutLists: (limit?: number) => Promise<void>;
 }
 
 const useCutListStore = create<CutListStore>((set, get) => ({
   cutLists: [],
-  cutTotalCount: 0,
   setCutLists: (cutLists) => {
     return set({ cutLists });
   },
-  setCutTotalCount: (cutTotalCount) => set({ cutTotalCount }),
   fetchCutLists: async (limit: number = 10) => {
     try {
       const response = await axios.get<ApiCutListsParentResponse>(
@@ -112,7 +108,6 @@ const useCutListStore = create<CutListStore>((set, get) => ({
 
       const currentState = get();
       const currentCutLists = currentState.cutLists;
-      const currentTotalCount = currentState.cutTotalCount;
 
       let cutListsDataChanged = false;
       if (currentCutLists.length !== processedFetchedItems.length) {
@@ -128,15 +123,10 @@ const useCutListStore = create<CutListStore>((set, get) => ({
         }
       }
 
-      const totalCountChanged = currentTotalCount !== newTotalCount;
-
-      if (cutListsDataChanged || totalCountChanged) {
+      if (cutListsDataChanged) {
         const updates: Partial<CutListStore> = {};
         if (cutListsDataChanged) {
           updates.cutLists = processedFetchedItems;
-        }
-        if (totalCountChanged) {
-          updates.cutTotalCount = newTotalCount;
         }
         set(updates);
       }
