@@ -64,7 +64,12 @@ const useCutListStore = create<CutListStore>((set, get) => ({
       );
 
       const rawApiItems: RawApiCutItem[] = response.data.cutLists.cut_lists;
-      const newTotalCount: number = response.data.cutLists.cut_total_count;
+
+      if(!rawApiItems){
+        set({cutLists: []});
+        return;
+      }
+      
 
       const processedFetchedItems: CutList[] = rawApiItems
         .map((item: RawApiCutItem): CutList => {
