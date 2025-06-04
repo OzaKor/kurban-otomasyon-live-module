@@ -47,6 +47,7 @@ interface CutDialogStore {
   setCutDialog: (cutDialog: ApiDialogItem) => void;
   setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) => void;
   fetchCut: (cutId: string | number) => Promise<AxiosResponse<CutDialogApiResponse>>;
+  fetchCutSkip: (cutId: number) => Promise<AxiosResponse<CutDialogApiResponse>>;
   fetchCutDialog: () => Promise<boolean>;
 }
 
@@ -74,6 +75,23 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
       return response;
     } catch (error) {
       console.error("Kesim detayları alınırken hata:", error);
+      throw error;
+    }
+  },
+
+  fetchCutSkip: async (cutId:  number) => {
+    try {
+      const response = await axios.post('/api/cuts/slaughter-animal-skip', {
+        cut_id: cutId,
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Error fetching cut skip");
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Kesim atla alınırken hata:", error);
       throw error;
     }
   },

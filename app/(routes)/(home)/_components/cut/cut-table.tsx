@@ -16,13 +16,14 @@ import { Icon } from "@iconify/react";
 import { AnimatePresence, motion } from "framer-motion"; // motion ve AnimatePresence import edildi
 import useUserStore from "@/store/useUserStore";
 import useCutDialogStore from "@/store/cuts/useCutDialogStore";
+import { TypeAnimation } from "react-type-animation";
 
 // TableRow componentini motion.create() ile sarmalayarak animasyon yetenekleri kazandırıyoruz.
 const MotionTableRow = motion.create(TableRow);
 
 const CutTable = () => {
-  const { cutLists,  cutTotalCount } = useCutListStore();
-  const {setCutDialog,setIsModalOpen} = useCutDialogStore();
+  const { cutLists } = useCutListStore();
+  const { setCutDialog, setIsModalOpen } = useCutDialogStore();
 
   const { user } = useUserStore();
 
@@ -31,7 +32,7 @@ const CutTable = () => {
       title: "Kesim Sırası",
       key: "index",
       className: "w-[100px]",
-    },    
+    },
     {
       title: "Adı Soyadı",
       key: "name",
@@ -43,17 +44,13 @@ const CutTable = () => {
       className: "w-[100px]",
     },
   ];
-  const openModal = (cutList: CutList,) => {
+  const openModal = (cutList: CutList) => {
     const modal: Modal = cutList.modal;
     setCutDialog(modal);
     setIsModalOpen(true);
   };
 
-  const ActionBtns = ({
-    cutList,
-  }: {
-    cutList: CutList;
-  }) => {
+  const ActionBtns = ({ cutList }: { cutList: CutList }) => {
     return (
       <Button
         variant="empty"
@@ -77,8 +74,50 @@ const CutTable = () => {
     });
   }
 
-  console.log(cutLists);
-  
+  const quotations = [
+    "Kurban, Allah'a gönülden bir yöneliştir.",
+    750,
+    "Takva ile sunulan kurban, Allah katında değerlidir.",
+    1250,
+    "Kurban, paylaşmaktır; paylaştıkça bereketlenir.",
+    1750,
+    "Bayramda gönüller birleşir, kurbanla yakınlık artar.",
+    2250,
+    "Kurban bereketi her eve ulaşsın, yüzler gülsün.",
+    2750,
+    "Niyetin özü samimiyet, kurbanın ruhu teslimiyettir.",
+    3250,
+    "Her kurban, İbrahim'in sadakati, İsmail'in sabrıdır.",
+    3750,
+    "Kurban, şükrün ve itaatin en içten halidir.",
+    4250,
+    "Samimi bir niyetle kesilen kurban, en makbul olanıdır.",
+    4750,
+    "Kurban, Allah rızası için yapılan en güzel fedakarlıktır.",
+    5250,
+    "Bayramda gönüller birleşir, kurbanla yakınlık artar.",
+    5750,
+    "Kurban bereketi her eve ulaşsın, yüzler gülsün.",
+    6250,
+    "Niyetin özü samimiyet, kurbanın ruhu teslimiyettir.",
+    6750,
+    "Her kurban, İbrahim'in sadakati, İsmail'in sabrıdır.",
+    7250,
+    "Kurban, şükrün ve itaatin en içten halidir.",
+    7750,
+    "Samimi bir niyetle kesilen kurban, en makbul olanıdır.",
+    8250,
+    "Kurban, Allah rızası için yapılan en güzel fedakarlıktır.",
+    8750,
+    "Her kurban, İbrahim'in sadakati, İsmail'in sabrıdır.",
+    9250,
+    "Kurban, şükrün ve itaatin en içten halidir.",
+    9750,
+    "Samimi bir niyetle kesilen kurban, en makbul olanıdır.",
+    10250,
+    "Kurban, Allah rızası için yapılan en güzel fedakarlıktır.",
+    10750,
+  ];
 
   return (
     <div className="p-0.5">
@@ -103,7 +142,7 @@ const CutTable = () => {
             <TableBody>
               {/* cutLists map'ini AnimatePresence ile sarmalıyoruz */}
               <AnimatePresence initial={false}>
-                {cutLists.slice(0,10).map((cutItem) => (
+                {cutLists.slice(0, 10).map((cutItem) => (
                   <MotionTableRow
                     key={cutItem.tbody.id}
                     layout
@@ -131,15 +170,13 @@ const CutTable = () => {
                     <TableCell className="py-4 px-5 text-base">
                       {cutItem.tbody.customer}
                     </TableCell>
-                  
+
                     <TableCell className="py-4 px-5 text-base">
                       {cutItem.tbody.cut_type}
                     </TableCell>
                     {user && user.role == "super_admin" && (
                       <TableCell className="text-right py-4 px-5">
-                        <ActionBtns
-                          cutList={cutItem}
-                        />
+                        <ActionBtns cutList={cutItem} />
                       </TableCell>
                     )}
                   </MotionTableRow>
@@ -149,15 +186,21 @@ const CutTable = () => {
             <TableFooter>
               <TableRow className="bg-gray-100 hover:bg-gray-100 border-t">
                 <TableCell
-                  colSpan={user && user.role == "super_admin" ? 3 : 2}
-                  className="py-4 px-5 font-medium text-base"
+                  colSpan={4}
+                  className="py-4 px-5 font-medium text-base w-full text-center"
                 >
-                  Toplam Kesilecek Hayvan Sayısı
-                </TableCell>
-                <TableCell className="text-right py-4 px-5">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-green-700 text-white rounded-full font-bold text-lg">
-                    {cutTotalCount}
-                  </div>
+                  <TypeAnimation
+                    sequence={[
+                      ...quotations,
+                      () => {
+                        console.log("Sequence completed");
+                      },
+                    ]}
+                    wrapper="span"
+                    cursor={true}
+                    repeat={Infinity}
+                    className="text-green-700 text-2xl font-extrabold"
+                  />
                 </TableCell>
               </TableRow>
             </TableFooter>
