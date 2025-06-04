@@ -7,6 +7,7 @@ type UserStore = {
   userToken: string | null;
   user: User | null;
   setUserToken: (token: string) => void;
+  setTokenClear: () => void;
   setUser: (user: User) => void;
   clear: () => void;
   fetchVerifyToken: (token: string | null) => Promise<void>;
@@ -19,6 +20,7 @@ const useUserStore = create<UserStore>()(
       userToken: null,
       user: null,
       setUserToken: (token: string) => set({ userToken: token }),
+      setTokenClear: () => set({ userToken: null }),
       setUser: (user: User) => set({ user }),
       clear: () => set({ userToken: null, user: null }),
       fetchVerifyToken: async (token: string | null) => {
