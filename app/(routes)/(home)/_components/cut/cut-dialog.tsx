@@ -45,7 +45,7 @@ function CutDialog() {
   const [loading, setLoading] = useState(false);
 
   // Gösterilen kesim ID'lerini saklamak için
-  const shownCutIds = useRef<Set<string | number>>(new Set());
+ // const shownCutIds = useRef<Set<string | number>>(new Set());
 
   // Ses için ref
   const audioRef = useRef<Howl | null>(null);
@@ -116,26 +116,27 @@ function CutDialog() {
         const fetchDialog = await fetchCutDialog();
         if (fetchDialog) {
           // Yeni kesim kontrolü - ID bazlı
-          if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
+          if (cutDialog) {
+          //  if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
             // Bu kesim daha önce gösterilmemiş
-            shownCutIds.current.add(cutDialog.cut_info.id);
+         //   shownCutIds.current.add(cutDialog.cut_info.id);
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
             playNotificationSound(); // Ses çal
 
             setTimeout(() => {
               setIsModalOpen(false);
-            }, 2500);
+            }, 10000);
           } else if (!currentCutDialog && cutDialog) {
             // İlk kez modal açılıyor
-            shownCutIds.current.add(cutDialog.cut_info.id);
+           // shownCutIds.current.add(cutDialog.cut_info.id);
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
             playNotificationSound(); // Ses çal
 
             setTimeout(() => {
               setIsModalOpen(false);
-            }, 2500);
+            }, 10000);
           }
         }
       } else {
@@ -154,13 +155,13 @@ function CutDialog() {
   ]);
 
   // Belirli aralıklarla gösterilen kesim listesini temizle (örn: 1 saat)
-  useEffect(() => {
-    const clearShownCuts = setInterval(() => {
-      shownCutIds.current.clear();
-    }, 3600000); // 1 saat
+  // useEffect(() => {
+  //   const clearShownCuts = setInterval(() => {
+  //     shownCutIds.current.clear();
+  //   }, 3600000); // 1 saat
 
-    return () => clearInterval(clearShownCuts);
-  }, []);
+  //   return () => clearInterval(clearShownCuts);
+  // }, []);
 
   // Modal kapandığında hemen kontrol et
   useEffect(() => {
@@ -170,7 +171,7 @@ function CutDialog() {
         if (!user || user.role !== "super_admin") {
           getDialog();
         }
-      }, 1500); // Küçük bir gecikme ile
+      }, 15000); // Küçük bir gecikme ile
 
       return () => clearTimeout(checkTimeout);
     }
