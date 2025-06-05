@@ -5,7 +5,7 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   token?: string;
 }
 
-export const apiUrl=process.env.NODE_ENV === "production" ? "https://kurban.hakankorkmaz.dev/api/v1" : "http://127.0.0.1:8000/api/v1";
+export const apiUrl=process.env.NODE_ENV === "production" ? "https://erdalyasar.com/api/v1" : "http://127.0.0.1:8000/api/v1";
 
 const axiosInstance: AxiosInstance = axios.create({
   timeout: 25000,
