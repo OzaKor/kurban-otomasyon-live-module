@@ -64,12 +64,14 @@ const LoginForm = () => {
         }
       );
 
-      const token =  response.data.token.split("|")[1];
+      const rawToken = response?.token;
+      if (!rawToken) throw new Error("Token alınamadı");
+      const token = rawToken.split("|")[1];
       useUser.setUserToken(`${token}`);
       useUser.setUser({
-        id: response.data.user.id || "",
-        name: response.data.user.name || "",
-        role: response.data.user.role || "",
+        id: response.user.id || "",
+        name: response.user.name || "",
+        role: response.user.role || "",
       });
 
       showToast("login-success","Giriş Yapıldı","success",undefined,undefined,"top-right",()=>{
