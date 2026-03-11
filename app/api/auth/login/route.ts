@@ -1,5 +1,6 @@
 
 import axios, { apiUrl } from "@/lib/axios";
+import { AxiosError } from "axios";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -26,8 +27,16 @@ try {
     
 } catch (error) {
     console.log("error: ", error);
-    
-    return NextResponse.json(error);
+    if (error instanceof AxiosError && error.response) {
+        return NextResponse.json(
+            error.response.data,
+            { status: error.response.status }
+        );
+    }
+    return NextResponse.json(
+        { message: "Sunucuya bağlanılamadı" },
+        { status: 503 }
+    );
 }
     
 }
