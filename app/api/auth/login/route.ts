@@ -1,6 +1,8 @@
 
 import axios, { apiUrl } from "@/lib/axios";
+import { AxiosError } from "axios";
 import { NextResponse } from "next/server";
+import { LoginResponse } from "@/types/user";
 
 export async function POST(request: Request) {
      const loginUrl =
@@ -17,7 +19,7 @@ try {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }) as unknown as LoginResponse;
 
       console.log("response: ", response);
       
@@ -26,8 +28,16 @@ try {
     
 } catch (error) {
     console.log("error: ", error);
-    
-    return NextResponse.json(error);
+    if (error instanceof AxiosError && error.response) {
+        return NextResponse.json(
+            error.response.data,
+            { status: error.response.status }
+        );
+    }
+    return NextResponse.json(
+        { message: "Sunucuya bağlanılamadı" },
+        { status: 503 }
+    );
 }
     
 }

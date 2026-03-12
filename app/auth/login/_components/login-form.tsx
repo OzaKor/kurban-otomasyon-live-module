@@ -20,12 +20,23 @@ import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
+import { LoginResponse } from "@/types/user";
 
 
-interface  defaultValuesInterface {
+interface defaultValuesInterface {
   email: string;
   password: string;
 }
+
+/*
+{
+    "process": false,
+    "message": "Giriş işlemi başarısız",
+    "data": null
+}
+
+ */
+
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const useUser = useUserStore();
@@ -38,17 +49,16 @@ const LoginForm = () => {
   };
 
   if (process.env.NODE_ENV === "development") {
-    defaultValues.email = "super_admin@admin.com";
-    defaultValues.password = "ozkr#.Gs#";
+    defaultValues.email = process.env.NEXT_PUBLIC_DEFAULT_EMAIL ?? ""
+    defaultValues.password = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD ?? ""
   }
-
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues,
   });
 
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+  async function onSubmit(values: z.infer<typeof LoginSchema>): Promise<void> {
     try {
       setIsLoading(true);
       const response = await axios.post(
@@ -62,27 +72,93 @@ const LoginForm = () => {
             "Content-Type": "application/json",
           },
         }
-      );
+      ) as unknown as LoginResponse;
 
-      const rawToken = response?.token;
-      if (!rawToken) throw new Error("Token alınamadı");
-      const token = rawToken.split("|")[1];
-      useUser.setUserToken(`${token}`);
+      if (!response || typeof response !== "object") {
+        showToast(
+          "login-error",
+          "Geçersiz sunucu yanıtı",
+          "error",
+          undefined,
+          undefined,
+          "top-right"
+        );
+        return;
+      }
+
+      if (!response.data) {
+        showToast(
+            "login-error",
+            "Giriş bilgileri alınamadı ",
+            "error",
+            undefined,
+            undefined,
+            "top-right"
+            )
+      }
+
+
+      const data = response.data;
+      console.log("Login response data:", data);
+      if (!data) {
+        showToast(
+          "login-error",
+          response.message || "Giriş bilgileri alınamadı 2",
+          "error",
+          undefined,
+          undefined,
+          "top-right"
+        );
+        return;
+      }
+
+      /*
+      {
+  "token": "60|hwXa25Xaqg8tPFEFKBK6oblvdfJLnsIiEouTBIstbfa5411b",
+  "user": {
+    "id": "eyJpdiI6ImJRanV0a2xUTjlqR2xkUnhrYlRxeFE9PSIsInZhbHVlIjoiNS9WVDB0TFhDd09TM1RRQ0pjSXJ1Zz09IiwibWFjIjoiYzUxNmNmNWQwMGZjZTJhOTcyMzQ4YTI5MTc0MTU2MDJiODI2MGU1OGUzYjY5MDMxYzNjNTdjM2Q0MTI1MTQ1ZCIsInRhZyI6IiJ9",
+    "name": "super_admin",
+    "role": "super_admin"
+  }
+}
+       */
+
+      if (!data.token || !data.user) {
+        showToast(
+          "login-error",
+          response.message || "Giriş bilgileri eksik",
+          "error",
+          undefined,
+          undefined,
+          "top-right"
+        );
+        return;
+      }
+
+      const tokenParts = data.token.split("|");
+      const token = tokenParts.length > 1 ? tokenParts[1] : data.token;
+      useUser.setUserToken(token);
       useUser.setUser({
-        id: response.user.id || "",
-        name: response.user.name || "",
-        role: response.user.role || "",
+        id: data.user.id || "",
+        name: data.user.name || "",
+        role: data.user.role || "",
       });
 
-      showToast("login-success","Giriş Yapıldı","success",undefined,undefined,"top-right",()=>{
+      showToast("login-success", "Giriş Yapıldı", "success", undefined, undefined, "top-right", () => {
         router.push("/");
       });
     } catch (error: unknown) {
+      let errorMessage = "Giriş Yapılırken Bir Hata Oluştu";
+
       if (error instanceof Error) {
         const axiosError = error as AxiosError;
         console.error("Login error:", error);
 
         if (axiosError.response) {
+          const responseData = axiosError.response.data as { message?: string } | undefined;
+          if (typeof responseData?.message === "string" && responseData.message.trim()) {
+            errorMessage = responseData.message;
+          }
           console.error("Error data:", axiosError.response.data);
           console.error("Error status:", axiosError.response.status);
           console.error("Error headers:", axiosError.response.headers);
@@ -95,8 +171,8 @@ const LoginForm = () => {
         console.error("An unknown error occurred");
       }
 
-      showToast("login-error","Giriş Yapılırken Bir Hata Oluştu","error",undefined,undefined,"top-right",()=>{
-        console.log("Giriş Yapılırken Bir Hata Oluştu");
+      showToast("login-error", errorMessage, "error", undefined, undefined, "top-right", () => {
+        console.log(errorMessage);
       });
     } finally {
       setIsLoading(false);
