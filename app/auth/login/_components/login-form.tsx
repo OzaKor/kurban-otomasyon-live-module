@@ -20,23 +20,12 @@ import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
-import { User } from "@/types/user";
+import { LoginResponse } from "@/types/user";
 
 
 interface defaultValuesInterface {
   email: string;
   password: string;
-}
-
-interface LoginResponseData {
-  token: string;
-  user: User;
-}
-
-interface LoginResponse {
-  process: boolean;
-  message: string;
-  data: LoginResponseData | null;
 }
 
 /*
@@ -60,8 +49,8 @@ const LoginForm = () => {
   };
 
   if (process.env.NODE_ENV === "development") {
-    defaultValues.email = "super_admin@admin.com";
-    defaultValues.password = "ozkr#.Gs#";
+    defaultValues.email = process.env.NEXT_PUBLIC_DEFAULT_EMAIL ?? ""
+    defaultValues.password = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD ?? ""
   }
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -69,10 +58,10 @@ const LoginForm = () => {
     defaultValues,
   });
 
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+  async function onSubmit(values: z.infer<typeof LoginSchema>): Promise<void> {
     try {
       setIsLoading(true);
-      const response = await axios.post<LoginResponse>(
+      const response = await axios.post(
         "/api/auth/login",
         {
           email: values.email,
@@ -83,13 +72,61 @@ const LoginForm = () => {
             "Content-Type": "application/json",
           },
         }
-      );
+      ) as unknown as LoginResponse;
 
-      const data = response.data.data;
-      if (!data?.token || !data?.user) {
+      if (!response || typeof response !== "object") {
         showToast(
           "login-error",
-          response.data.message || "Giriş bilgileri alınamadı",
+          "Geçersiz sunucu yanıtı",
+          "error",
+          undefined,
+          undefined,
+          "top-right"
+        );
+        return;
+      }
+
+      if (!response.data) {
+        showToast(
+            "login-error",
+            "Giriş bilgileri alınamadı ",
+            "error",
+            undefined,
+            undefined,
+            "top-right"
+            )
+      }
+
+
+      const data = response.data;
+      console.log("Login response data:", data);
+      if (!data) {
+        showToast(
+          "login-error",
+          response.message || "Giriş bilgileri alınamadı 2",
+          "error",
+          undefined,
+          undefined,
+          "top-right"
+        );
+        return;
+      }
+
+      /*
+      {
+  "token": "60|hwXa25Xaqg8tPFEFKBK6oblvdfJLnsIiEouTBIstbfa5411b",
+  "user": {
+    "id": "eyJpdiI6ImJRanV0a2xUTjlqR2xkUnhrYlRxeFE9PSIsInZhbHVlIjoiNS9WVDB0TFhDd09TM1RRQ0pjSXJ1Zz09IiwibWFjIjoiYzUxNmNmNWQwMGZjZTJhOTcyMzQ4YTI5MTc0MTU2MDJiODI2MGU1OGUzYjY5MDMxYzNjNTdjM2Q0MTI1MTQ1ZCIsInRhZyI6IiJ9",
+    "name": "super_admin",
+    "role": "super_admin"
+  }
+}
+       */
+
+      if (!data.token || !data.user) {
+        showToast(
+          "login-error",
+          response.message || "Giriş bilgileri eksik",
           "error",
           undefined,
           undefined,
