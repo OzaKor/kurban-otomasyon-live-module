@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
+
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
 import { LoginResponse } from "@/types/user";
+import { extractApiErrorMessage } from "@/lib/apiError";
 
 
 interface defaultValuesInterface {
@@ -88,22 +89,8 @@ const LoginForm = () => {
 
       if (!response.data) {
         showToast(
-            "login-error",
-            "Giriş bilgileri alınamadı ",
-            "error",
-            undefined,
-            undefined,
-            "top-right"
-            )
-      }
-
-
-      const data = response.data;
-      console.log("Login response data:", data);
-      if (!data) {
-        showToast(
           "login-error",
-          response.message || "Giriş bilgileri alınamadı 2",
+          response.message || "Giriş bilgileri alınamadı",
           "error",
           undefined,
           undefined,
@@ -111,6 +98,8 @@ const LoginForm = () => {
         );
         return;
       }
+
+      const data = response.data;
 
       /*
       {
@@ -148,32 +137,9 @@ const LoginForm = () => {
         router.push("/");
       });
     } catch (error: unknown) {
-      let errorMessage = "Giriş Yapılırken Bir Hata Oluştu";
-
-      if (error instanceof Error) {
-        const axiosError = error as AxiosError;
-        console.error("Login error:", error);
-
-        if (axiosError.response) {
-          const responseData = axiosError.response.data as { message?: string } | undefined;
-          if (typeof responseData?.message === "string" && responseData.message.trim()) {
-            errorMessage = responseData.message;
-          }
-          console.error("Error data:", axiosError.response.data);
-          console.error("Error status:", axiosError.response.status);
-          console.error("Error headers:", axiosError.response.headers);
-        } else if (axiosError.request) {
-          console.error("No response received:", axiosError.request);
-        } else {
-          console.error("Error message:", error.message);
-        }
-      } else {
-        console.error("An unknown error occurred");
-      }
-
-      showToast("login-error", errorMessage, "error", undefined, undefined, "top-right", () => {
-        console.log(errorMessage);
-      });
+      console.error("Login error:", error);
+      const errorMessage = extractApiErrorMessage(error, "Giriş Yapılırken Bir Hata Oluştu");
+      showToast("login-error", errorMessage, "error", undefined, undefined, "top-right");
     } finally {
       setIsLoading(false);
     }
