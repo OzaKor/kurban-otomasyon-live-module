@@ -86,7 +86,7 @@ const useCutListStore = create<CutListStore>((set, get) => ({
           return {
             tbody: {
               id: tbody?.id,
-              cutting_sequence: Number(tbody?.cutting_sequence),
+              cutting_sequence: tbody?.cutting_sequence,
               customer: tbody.customer,
               cut_type: tbody?.cut_type,
             },
