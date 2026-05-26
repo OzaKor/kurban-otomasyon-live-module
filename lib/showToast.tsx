@@ -9,17 +9,16 @@ const showToast = (
   icon?: string | React.ReactNode,
   duration?: number,
   position?: "top-center" | "top-right" | "bottom-center" | "bottom-right",
-  onAutoClose?: () => void
+  onAutoClose?: () => void,
 ) => {
-
-    let iconValue = icon;
-    if (icon===undefined) {
-        if(action === "success"){
-            iconValue = <BadgeCheck size={24} className="text-green-500" />;
-        }
-    } else {
-        iconValue = icon;
+  let iconValue = icon;
+  if (icon === undefined) {
+    if (action === "success") {
+      iconValue = <BadgeCheck size={24} className="text-green-500" />;
     }
+  } else {
+    iconValue = icon;
+  }
 
   toast(message, {
     id,

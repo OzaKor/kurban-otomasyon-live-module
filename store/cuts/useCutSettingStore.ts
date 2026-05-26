@@ -8,7 +8,7 @@ interface CutSettingStore {
   setState: (
     state:
       | cutSettingInterface
-      | ((prev: cutSettingInterface) => cutSettingInterface)
+      | ((prev: cutSettingInterface) => cutSettingInterface),
   ) => void;
   fetchCutSetting: () => Promise<void>;
   clear: () => void;
@@ -48,8 +48,8 @@ const useCutSettingStore = create<CutSettingStore>()(
       name: "cut-setting-storage",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ state: state.state }),
-    }
-  )
+    },
+  ),
 );
 
 export default useCutSettingStore;

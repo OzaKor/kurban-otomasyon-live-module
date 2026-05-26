@@ -4,7 +4,7 @@ import Breadcrumbs from "@/components/breadcrumbs";
 const CounterPage = () => {
   return (
     <div>
-    <Breadcrumbs
+      <Breadcrumbs
         items={[
           {
             href: "/",
@@ -21,7 +21,7 @@ const CounterPage = () => {
         ]}
       />
       <div className="relative">
-      <Counter />
+        <Counter />
       </div>
     </div>
   );

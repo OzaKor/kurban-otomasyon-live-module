@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import useUserStore from "@/store/useUserStore";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import logger from "@/lib/logger";
 
 interface VerifyTokenProviderProps {
   children: React.ReactNode;
@@ -18,12 +19,12 @@ const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
       try {
         await fetchVerifyToken(userToken);
       } catch (error) {
-        console.log("Token verification error: ", error);
+        logger("Token verification error: ", error);
         if (error instanceof Error) {
           if (axios.isAxiosError(error)) {
-            console.log(
+            logger(
               "error.response?.data.message: ",
-              error.response?.data.message
+              error.response?.data.message,
             );
           }
           setTokenClear();
@@ -35,7 +36,7 @@ const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
     };
 
     verifyToken();
-  }, [fetchVerifyToken, userToken, router]);
+  }, [fetchVerifyToken, userToken, router, setTokenClear]);
 
   if (isLoading) {
     return (

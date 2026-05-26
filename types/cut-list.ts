@@ -29,7 +29,7 @@ export interface Modal {
 
 export interface Tbody {
   id: number | string;
-  cutting_sequence: number;
+  cutting_sequence: string | number;
   customer: string;
   cut_type: string;
 }

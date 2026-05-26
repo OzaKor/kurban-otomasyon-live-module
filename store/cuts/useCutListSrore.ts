@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import CutList, { Tbody } from "@/types/cut-list";
 import axios from "@/lib/axios";
+import logger from "@/lib/logger";
 
 interface RawApiCutItem {
-  tbody: Tbody
+  tbody: Tbody;
   modal: {
     cut_info: {
       id: string | number;
@@ -60,16 +61,15 @@ const useCutListStore = create<CutListStore>((set, get) => ({
           params: {
             limit,
           },
-        }
+        },
       );
 
       const rawApiItems: RawApiCutItem[] = response.data.cutLists.cut_lists;
 
-      if(!rawApiItems){
-        set({cutLists: []});
+      if (!rawApiItems) {
+        set({ cutLists: [] });
         return;
       }
-      
 
       const processedFetchedItems: CutList[] = rawApiItems
         .map((item: RawApiCutItem): CutList => {
@@ -77,16 +77,13 @@ const useCutListStore = create<CutListStore>((set, get) => ({
           const modal = item.modal;
 
           if (!tbody || !modal || !modal.cut_info || !modal.animal_info) {
-            console.warn(
-              "API'den eksik öğe verisi alındı, öğe atlanıyor:",
-              item
-            );
+            logger("API'den eksik öğe verisi alındı, öğe atlanıyor:", item);
           }
 
           return {
             tbody: {
               id: tbody?.id,
-              cutting_sequence: Number(tbody?.cutting_sequence),
+              cutting_sequence: tbody?.cutting_sequence,
               customer: tbody.customer,
               cut_type: tbody?.cut_type,
             },
@@ -136,7 +133,7 @@ const useCutListStore = create<CutListStore>((set, get) => ({
         set(updates);
       }
     } catch (error) {
-      console.error("Kesim listeleri alınırken hata oluştu:", error);
+      logger("Kesim listeleri alınırken hata oluştu:", error);
     }
   },
 }));

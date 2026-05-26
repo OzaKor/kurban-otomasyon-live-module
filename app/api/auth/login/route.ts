@@ -1,43 +1,42 @@
-
 import axios, { apiUrl } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { NextResponse } from "next/server";
 import { LoginResponse } from "@/types/user";
+import logger from "@/lib/logger";
 
 export async function POST(request: Request) {
-     const loginUrl =
-    `${apiUrl}/auth/login` ||
-    "http://localhost:8000/api/v1/auth/login";
-try {
-  console.log("loginUrl: ", loginUrl);
-  
+  const loginUrl =
+    `${apiUrl}/auth/login` || "http://localhost:8000/api/v1/auth/login";
+  try {
+    logger("loginUrl: ", loginUrl);
+
     const body = await request.json();
-    const response = await axios.post(loginUrl, {
+    const response = (await axios.post(
+      loginUrl,
+      {
         login: body.email,
         password: body.password,
-      }, {
+      },
+      {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      }) as unknown as LoginResponse;
+      },
+    )) as unknown as LoginResponse;
 
-      console.log("response: ", response);
-      
+    logger("response: ", response);
 
-      return NextResponse.json(response);
-    
-} catch (error) {
-    console.log("error: ", error);
+    return NextResponse.json(response);
+  } catch (error) {
+    logger("error: ", error);
     if (error instanceof AxiosError && error.response) {
-        return NextResponse.json(
-            error.response.data,
-            { status: error.response.status }
-        );
+      return NextResponse.json(error.response.data, {
+        status: error.response.status,
+      });
     }
     return NextResponse.json(
-        { message: "Sunucuya bağlanılamadı" },
-        { status: 503 }
+      { message: "Sunucuya bağlanılamadı" },
+      { status: 503 },
     );
-}
-    
+  }
 }

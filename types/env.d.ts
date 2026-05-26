@@ -1,4 +1,3 @@
-
 declare namespace NodeJS {
   interface ProcessEnv {
     // Özel ortam değişkenlerinizi buraya ekleyin
@@ -10,6 +9,5 @@ declare namespace NodeJS {
 
     // API URL'si
     BACKEND_URL: string;
-
   }
 }

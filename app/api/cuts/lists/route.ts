@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
             total_count: 0,
           },
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -50,10 +50,9 @@ export async function GET(request: NextRequest) {
           total_count: 0,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-
     if (axios.isAxiosError(error)) {
       return NextResponse.json(
         {
@@ -64,7 +63,7 @@ export async function GET(request: NextRequest) {
             total_count: 0,
           },
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
@@ -76,7 +75,7 @@ export async function GET(request: NextRequest) {
           total_count: 0,
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

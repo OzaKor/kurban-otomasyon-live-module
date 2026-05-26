@@ -20,14 +20,14 @@ const DynamicCutInfo = dynamic(
   {
     loading: () => <CutLoading />,
     ssr: true,
-  }
+  },
 );
 const DynamicCutTable = dynamic(
   () => import("@/app/(routes)/(home)/_components/cut/cut-table"),
   {
     loading: () => <CutLoading />,
     ssr: true,
-  }
+  },
 );
 
 const Cut = () => {
@@ -35,7 +35,7 @@ const Cut = () => {
 
   let ComponentToRender = null;
   let componentKey = "cut-info-default";
- 
+
   if (state.proccessStart) {
     componentKey = "cut-info-active";
     ComponentToRender = DynamicCutInfo;
@@ -46,7 +46,6 @@ const Cut = () => {
     componentKey = "cut-info-active";
     ComponentToRender = DynamicCutInfo;
   }
-
 
   const variants = {
     initial: { opacity: 0, y: 20 },

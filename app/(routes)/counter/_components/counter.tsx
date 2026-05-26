@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import axios from "@/lib/axios";
+import logger from "@/lib/logger";
 
 const Counter = () => {
   const isInitialMount = useRef(true);
@@ -31,7 +32,7 @@ const Counter = () => {
         setIsError(false);
       }
     } catch (error) {
-      console.error("Error fetching counter:", error);
+      logger("Error fetching counter:", error);
       setCounter(0);
       setCutDate("");
       setCutTime("");
@@ -139,7 +140,6 @@ const Counter = () => {
                     priority
                   />
                 </div> */}
-
               </div>
             </CardContent>
           </Card>
