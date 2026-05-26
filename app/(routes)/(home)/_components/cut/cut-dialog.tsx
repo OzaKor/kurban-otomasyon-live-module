@@ -26,6 +26,7 @@ import useCutDialogStore from "@/store/cuts/useCutDialogStore";
 import useCutListStore from "@/store/cuts/useCutListSrore";
 import showToast from "@/lib/showToast";
 import useCutSettingStore from "@/store/cuts/useCutSettingStore";
+import logger from "@/lib/logger";
 
 function CutDialog() {
   const { user } = useUserStore();
@@ -45,7 +46,7 @@ function CutDialog() {
   const [loading, setLoading] = useState(false);
 
   // Gösterilen kesim ID'lerini saklamak için
- // const shownCutIds = useRef<Set<string | number>>(new Set());
+  // const shownCutIds = useRef<Set<string | number>>(new Set());
 
   // Ses için ref
   const audioRef = useRef<Howl | null>(null);
@@ -58,11 +59,11 @@ function CutDialog() {
       loop: false,
       html5: true,
       onplayerror: (id, error) => {
-        console.error("Ses çalma hatası:", error);
+        logger("Ses çalma hatası:", error);
         // ... (yukarıdaki gibi hata yönetimi)
       },
       onloaderror: (id, error) => {
-        console.error("Ses yükleme hatası:", error);
+        logger("Ses yükleme hatası:", error);
       },
     });
 
@@ -86,7 +87,7 @@ function CutDialog() {
               audioRef.current.play();
             }
           })
-          .catch((e) => console.error("Audio context resume error:", e));
+          .catch((e) => logger("Audio context resume error:", e));
       } else {
         if (audioRef.current) {
           audioRef.current.seek(0);
@@ -105,7 +106,7 @@ function CutDialog() {
 
   const removeCutList = (removeCutId: number) => {
     const newCutLists = cutLists.filter(
-      (cutList) => cutList.tbody.id !== removeCutId
+      (cutList) => cutList.tbody.id !== removeCutId,
     );
     setCutLists(newCutLists);
   };
@@ -117,9 +118,9 @@ function CutDialog() {
         if (fetchDialog) {
           // Yeni kesim kontrolü - ID bazlı
           if (cutDialog) {
-          //  if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
+            //  if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
             // Bu kesim daha önce gösterilmemiş
-         //   shownCutIds.current.add(cutDialog.cut_info.id);
+            //   shownCutIds.current.add(cutDialog.cut_info.id);
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
             playNotificationSound(); // Ses çal
@@ -129,7 +130,7 @@ function CutDialog() {
             }, 10000);
           } else if (!currentCutDialog && cutDialog) {
             // İlk kez modal açılıyor
-           // shownCutIds.current.add(cutDialog.cut_info.id);
+            // shownCutIds.current.add(cutDialog.cut_info.id);
             setCurrentCutDialog(cutDialog);
             setIsModalOpen(true);
             playNotificationSound(); // Ses çal
@@ -249,7 +250,7 @@ function CutDialog() {
                       "grid gap-6",
                       cutDialog?.animal_info?.weight
                         ? "grid-cols-2 xl:grid-cols-4"
-                        : "grid-cols-2 xl:grid-cols-3"
+                        : "grid-cols-2 xl:grid-cols-3",
                     )}
                   >
                     <div className="text-center">
@@ -335,7 +336,7 @@ function CutDialog() {
                                     "text-xs px-3 py-1 rounded-full font-medium",
                                     customer.payment_status === "Ödendi"
                                       ? "bg-green-100 text-green-800"
-                                      : "bg-red-100 text-red-800"
+                                      : "bg-red-100 text-red-800",
                                   )}
                                 >
                                   {customer.payment_status}
@@ -384,7 +385,7 @@ function CutDialog() {
                                     {subShareholder.share_count} hisse
                                   </div>
                                 </div>
-                              )
+                              ),
                             )}
                           </div>
                         )}
@@ -450,7 +451,7 @@ function CutDialog() {
                                 "px-3 py-1 text-xs font-bold rounded-full",
                                 customer.payment_status === "Ödendi"
                                   ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
+                                  : "bg-red-100 text-red-800",
                               )}
                             >
                               {customer.payment_status}
@@ -493,16 +494,16 @@ function CutDialog() {
                         showToast(
                           "cut-dialog-success",
                           "Hayvan kesme işlemi başarılı",
-                          "success"
+                          "success",
                         );
                       })
                       .catch((error) => {
                         showToast(
                           "cut-dialog-error",
                           "Hayvan kesme işlemi sırasında hata oluştu",
-                          "error"
+                          "error",
                         );
-                        console.error("error: ", error);
+                        logger("error: ", error);
                       })
                       .finally(() => {
                         setLoading(false);
@@ -570,16 +571,16 @@ function CutDialog() {
                         showToast(
                           "cut-dialog-success",
                           "Hayvan kesmi atlandı",
-                          "success"
+                          "success",
                         );
                       })
                       .catch((error) => {
                         showToast(
                           "cut-dialog-error",
                           "Hayvan kesmi atlanırken hata oluştu",
-                          "error"
+                          "error",
                         );
-                        console.error("error: ", error);
+                        logger("error: ", error);
                       })
                       .finally(() => {
                         setLoading(false);

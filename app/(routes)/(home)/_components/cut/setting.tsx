@@ -12,6 +12,7 @@ import axios from "axios";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
 import useCutListStore from "@/store/cuts/useCutListSrore";
+import logger from "@/lib/logger";
 
 const Setting = () => {
   const { userToken } = useUserStore();
@@ -80,23 +81,23 @@ const Setting = () => {
         },
       })
       .then(() => {
-        console.log("Kesim ayarları güncellendi");
+        logger("Kesim ayarları güncellendi");
         showToast(
           "success",
           "Kesim ayarları güncellendi",
           "success",
           undefined,
           undefined,
-          "top-center"
+          "top-center",
         );
         setUpdate(key);
       })
       .catch((error) => {
-        console.error("Kesim ayarları hatası: ", error);
+        logger("Kesim ayarları hatası: ", error);
       })
       .finally(() => {
         setLoading(false);
-        if(key==="start" || key==="continue"){
+        if (key === "start" || key === "continue") {
           fetchCutLists(20);
         }
       });
@@ -124,7 +125,7 @@ const Setting = () => {
           <Button
             className={cn(
               "flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
-              loading && "cursor-not-allowed opacity-70"
+              loading && "cursor-not-allowed opacity-70",
             )}
             onClick={() => handleProcessCut("start")}
             disabled={loading}
@@ -137,7 +138,7 @@ const Setting = () => {
           <Button
             className={cn(
               "flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
-              loading && "cursor-not-allowed opacity-70"
+              loading && "cursor-not-allowed opacity-70",
             )}
             onClick={() => handleProcessCut("continue")}
             disabled={loading}
@@ -150,7 +151,7 @@ const Setting = () => {
           <Button
             className={cn(
               "flex items-center justify-center gap-3 w-full bg-yellow-600 hover:bg-yellow-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
-              loading && "cursor-not-allowed opacity-70"
+              loading && "cursor-not-allowed opacity-70",
             )}
             onClick={() => handleProcessCut("stop")}
             disabled={loading}
@@ -163,7 +164,7 @@ const Setting = () => {
           <Button
             className={cn(
               "flex items-center justify-center gap-3 w-full bg-red-600 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70 text-white font-medium text-lg px-4 py-4 rounded-lg transition-colors duration-200 shadow-md hover:scale-105 hover:cursor-pointer",
-              loading && "cursor-not-allowed opacity-70"
+              loading && "cursor-not-allowed opacity-70",
             )}
             onClick={() => handleProcessCut("end")}
             disabled={loading}

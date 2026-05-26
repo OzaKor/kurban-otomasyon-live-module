@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from "framer-motion"; // motion ve AnimatePre
 import useUserStore from "@/store/useUserStore";
 import useCutDialogStore from "@/store/cuts/useCutDialogStore";
 import { TypeAnimation } from "react-type-animation";
+import logger from "@/lib/logger";
 
 // TableRow componentini motion.create() ile sarmalayarak animasyon yetenekleri kazandırıyoruz.
 const MotionTableRow = motion.create(TableRow);
@@ -193,7 +194,7 @@ const CutTable = () => {
                     sequence={[
                       ...quotations,
                       () => {
-                        console.log("Sequence completed");
+                        logger("Sequence completed");
                       },
                     ]}
                     wrapper="span"

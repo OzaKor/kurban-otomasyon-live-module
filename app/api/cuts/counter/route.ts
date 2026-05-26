@@ -1,6 +1,7 @@
 import { apiUrl } from "@/lib/axios";
 import { NextResponse } from "next/server";
 import axios from "axios";
+import logger from "@/lib/logger";
 
 const url = `${apiUrl}/live/cuts/counter`;
 
@@ -15,19 +16,19 @@ export async function GET() {
 
     if (response.data.process) {
       return NextResponse.json({
-        data: response.data.data
+        data: response.data.data,
       });
     }
 
     return NextResponse.json(
       { message: "Sunucu hatası oluştu" },
-      { status: 500 }
+      { status: 500 },
     );
   } catch (error) {
-    console.error("Error fetching counter:", error);
+    logger("Error fetching counter:", error);
     return NextResponse.json(
       { message: "Sunucu hatası oluştu" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

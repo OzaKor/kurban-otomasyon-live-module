@@ -22,7 +22,7 @@ const Main = () => {
         await fetchCutLists(limit);
       }
     },
-    [fetchCutSetting, fetchCutLists, state]
+    [fetchCutSetting, fetchCutLists, state],
   );
 
   useEffect(() => {

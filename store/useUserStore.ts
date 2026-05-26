@@ -43,8 +43,8 @@ const useUserStore = create<UserStore>()(
     {
       name: "user-session",
       storage: createJSONStorage(() => sessionStorage),
-    }
-  )
+    },
+  ),
 );
 
 export default useUserStore;

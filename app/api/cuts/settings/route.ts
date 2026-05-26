@@ -1,7 +1,8 @@
 import { apiUrl } from "@/lib/axios";
 import { NextResponse } from "next/server";
 import axios from "axios";
-const url=`${apiUrl}/live/cut-settings`;
+import logger from "@/lib/logger";
+const url = `${apiUrl}/live/cut-settings`;
 export async function GET() {
   try {
     const response = await axios.get(url, {
@@ -13,17 +14,17 @@ export async function GET() {
 
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error("Kesim ayarları hatası: ", error);
+    logger("Kesim ayarları hatası: ", error);
     return NextResponse.json(
       { message: "Sunucu hatası oluştu" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const token= request.headers.get("Authorization");
+    const token = request.headers.get("Authorization");
     if (!token || !token.startsWith("Bearer")) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -38,10 +39,10 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error("Kesim ayarları hatası: ", error);
+    logger("Kesim ayarları hatası: ", error);
     return NextResponse.json(
       { message: "Sunucu hatası oluştu" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

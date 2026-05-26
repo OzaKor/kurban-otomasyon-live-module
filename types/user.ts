@@ -1,7 +1,7 @@
 export interface User {
-    id: number | string;
-    name: string;
-    role: string;
+  id: number | string;
+  name: string;
+  role: string;
 }
 
 export interface LoginResponseData {

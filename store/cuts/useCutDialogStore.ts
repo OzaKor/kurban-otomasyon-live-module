@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import axios, { AxiosResponse } from "axios";
+import logger from "@/lib/logger";
 
 interface CutDialogApiResponse {
   process: boolean;
@@ -46,7 +46,9 @@ interface CutDialogStore {
   setIsUniqueRegistration: (isUniqueRegistration: boolean) => void;
   setCutDialog: (cutDialog: ApiDialogItem) => void;
   setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) => void;
-  fetchCut: (cutId: string | number) => Promise<AxiosResponse<CutDialogApiResponse>>;
+  fetchCut: (
+    cutId: string | number,
+  ) => Promise<AxiosResponse<CutDialogApiResponse>>;
   fetchCutSkip: (cutId: number) => Promise<AxiosResponse<CutDialogApiResponse>>;
   fetchCutDialog: () => Promise<boolean>;
 }
@@ -74,14 +76,14 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
 
       return response;
     } catch (error) {
-      console.error("Kesim detayları alınırken hata:", error);
+      logger("Kesim detayları alınırken hata:", error);
       throw error;
     }
   },
 
-  fetchCutSkip: async (cutId:  number) => {
+  fetchCutSkip: async (cutId: number) => {
     try {
-      const response = await axios.post('/api/cuts/slaughter-animal-skip', {
+      const response = await axios.post("/api/cuts/slaughter-animal-skip", {
         cut_id: cutId,
       });
 
@@ -91,42 +93,44 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
 
       return response;
     } catch (error) {
-      console.error("Kesim atla alınırken hata:", error);
+      logger("Kesim atla alınırken hata:", error);
       throw error;
     }
   },
 
   fetchCutDialog: async () => {
     try {
-      const response = await axios.get<CutDialogApiResponse>('/api/cuts/dialog', {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+      const response = await axios.get<CutDialogApiResponse>(
+        "/api/cuts/dialog",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
         },
-      });
+      );
 
       if (response.status !== 200) {
         throw new Error("Kesim detayları alınırken hata oluştu");
       }
 
-      const { data,process } = response.data;
+      const { data, process } = response.data;
 
       if (process) {
-           if (get().currentCutDialog === null) {
+        if (get().currentCutDialog === null) {
+          set({
+            currentCutDialog: data,
+          });
+        }
+
         set({
-          currentCutDialog: data
+          cutDialog: data,
         });
       }
-      
-      set({
-        cutDialog: data,
-      });
-      }
-   
 
       return process;
     } catch (error) {
-      console.error("Kesim detayları alınamadı:", error);
+      logger("Kesim detayları alınamadı:", error);
       return false;
     }
   },

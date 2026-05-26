@@ -1,27 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import VerifyTokenProvider from "@/providers/verifyTokenProvider";
 import Offline from "@/components/offline";
 
+const subscribeToOnlineStatus = (callback: () => void) => {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+};
+
+const getOnlineSnapshot = () => navigator.onLine;
+const getOnlineServerSnapshot = () => true;
+
 const OfflineProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isOnline, setIsOnline] = useState(false);
-
-  useEffect(() => {
-    // İlk yüklemede mevcut durumu ayarla
-    setIsOnline(navigator.onLine);
-    
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
+  const isOnline = useSyncExternalStore(
+    subscribeToOnlineStatus,
+    getOnlineSnapshot,
+    getOnlineServerSnapshot,
+  );
 
   return (
     <>

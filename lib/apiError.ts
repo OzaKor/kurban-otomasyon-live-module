@@ -13,11 +13,14 @@ type ApiErrorPayload = {
 
 export function extractApiErrorMessage(
   error: unknown,
-  fallbackMessage: string
+  fallbackMessage: string,
 ): string {
   if (axios.isAxiosError(error)) {
     const responseData = error.response?.data as ApiErrorPayload | undefined;
-    if (typeof responseData?.message === "string" && responseData.message.trim()) {
+    if (
+      typeof responseData?.message === "string" &&
+      responseData.message.trim()
+    ) {
       return responseData.message;
     }
 
@@ -36,7 +39,7 @@ export function extractApiErrorMessage(
 export function normalizeApiError(
   error: unknown,
   fallbackMessage: string,
-  fallbackStatus = 500
+  fallbackStatus = 500,
 ): ApiErrorShape {
   if (axios.isAxiosError(error)) {
     const responseData = error.response?.data as ApiErrorPayload | undefined;
@@ -53,4 +56,3 @@ export function normalizeApiError(
     message: extractApiErrorMessage(error, fallbackMessage),
   };
 }
-

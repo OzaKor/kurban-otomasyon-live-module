@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Footer from "@/components/layout/Footer";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
@@ -10,19 +10,16 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
-  const [isLoading, setIsLoading] = useState(true);
   const { userToken } = useUserStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && userToken) {
+    if (userToken) {
       router.push("/");
-    } else {
-      setIsLoading(false);
     }
   }, [userToken, router]);
 
-  if (isLoading) {
+  if (userToken) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -30,11 +27,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     );
   }
 
-  if (userToken) {
-    return null;
-  }
-
-  
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto px-4 py-6">

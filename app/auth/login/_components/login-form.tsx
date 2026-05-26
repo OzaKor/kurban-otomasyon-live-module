@@ -22,7 +22,7 @@ import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
 import { LoginResponse } from "@/types/user";
 import { extractApiErrorMessage } from "@/lib/apiError";
-
+import logger from "@/lib/logger";
 
 interface defaultValuesInterface {
   email: string;
@@ -50,8 +50,8 @@ const LoginForm = () => {
   };
 
   if (process.env.NODE_ENV === "development") {
-    defaultValues.email = process.env.NEXT_PUBLIC_DEFAULT_EMAIL ?? ""
-    defaultValues.password = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD ?? ""
+    defaultValues.email = process.env.NEXT_PUBLIC_DEFAULT_EMAIL ?? "";
+    defaultValues.password = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD ?? "";
   }
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -62,7 +62,7 @@ const LoginForm = () => {
   async function onSubmit(values: z.infer<typeof LoginSchema>): Promise<void> {
     try {
       setIsLoading(true);
-      const response = await axios.post(
+      const response = (await axios.post(
         "/api/auth/login",
         {
           email: values.email,
@@ -72,8 +72,8 @@ const LoginForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
-      ) as unknown as LoginResponse;
+        },
+      )) as unknown as LoginResponse;
 
       if (!response || typeof response !== "object") {
         showToast(
@@ -82,7 +82,7 @@ const LoginForm = () => {
           "error",
           undefined,
           undefined,
-          "top-right"
+          "top-right",
         );
         return;
       }
@@ -94,7 +94,7 @@ const LoginForm = () => {
           "error",
           undefined,
           undefined,
-          "top-right"
+          "top-right",
         );
         return;
       }
@@ -119,7 +119,7 @@ const LoginForm = () => {
           "error",
           undefined,
           undefined,
-          "top-right"
+          "top-right",
         );
         return;
       }
@@ -133,13 +133,31 @@ const LoginForm = () => {
         role: data.user.role || "",
       });
 
-      showToast("login-success", "Giriş Yapıldı", "success", undefined, undefined, "top-right", () => {
-        router.push("/");
-      });
+      showToast(
+        "login-success",
+        "Giriş Yapıldı",
+        "success",
+        undefined,
+        undefined,
+        "top-right",
+        () => {
+          router.push("/");
+        },
+      );
     } catch (error: unknown) {
-      console.error("Login error:", error);
-      const errorMessage = extractApiErrorMessage(error, "Giriş Yapılırken Bir Hata Oluştu");
-      showToast("login-error", errorMessage, "error", undefined, undefined, "top-right");
+      logger("Login error:", error);
+      const errorMessage = extractApiErrorMessage(
+        error,
+        "Giriş Yapılırken Bir Hata Oluştu",
+      );
+      showToast(
+        "login-error",
+        errorMessage,
+        "error",
+        undefined,
+        undefined,
+        "top-right",
+      );
     } finally {
       setIsLoading(false);
     }

@@ -3,4 +3,4 @@ export interface cutSettingInterface {
   proccessEnd: boolean;
   processContinue: boolean;
   processStop: boolean;
-};
+}

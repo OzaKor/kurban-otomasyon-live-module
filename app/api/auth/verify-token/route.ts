@@ -1,6 +1,7 @@
 import { apiUrl } from "@/lib/axios";
 import { NextResponse } from "next/server";
 import axios from "axios";
+import logger from "@/lib/logger";
 
 export async function GET(request: Request) {
   try {
@@ -22,9 +23,9 @@ export async function GET(request: Request) {
 
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error(
-      "Token verification error:",
-      error instanceof Error ? error.message : "Unknown error"
+    logger(
+      "Token verification error: ",
+      error instanceof Error ? error.message : "Unknown error",
     );
 
     if (axios.isAxiosError(error)) {
@@ -37,14 +38,14 @@ export async function GET(request: Request) {
           message: error.response?.data?.message || "Internal server error",
           errors: error.response?.data?.errors,
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     // For non-Axios errors
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
