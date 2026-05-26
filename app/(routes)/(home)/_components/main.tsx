@@ -32,11 +32,12 @@ const Main = () => {
       fetchDt(limit);
     }
 
-    if (user?.role !== "super_admin") {
-      settingSetInterval.current = window.setInterval(() => {
-        fetchDt(10);
-      }, 5000);
-    }
+    const intervalMs = user?.role === "super_admin" ? 10000 : 5000;
+    const pollLimit = user?.role === "super_admin" ? 20 : 10;
+
+    settingSetInterval.current = window.setInterval(() => {
+      fetchDt(pollLimit);
+    }, intervalMs);
 
     return () => {
       if (settingSetInterval.current) {
