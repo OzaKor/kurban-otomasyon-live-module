@@ -12,10 +12,7 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   token?: string;
 }
 
-export const apiUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.BACKEND_URL
-    : "http://127.0.0.1:8000/api/v1";
+export const apiUrl = process.env.BACKEND_URL ?? "http://127.0.0.1:8000/api/v1";
 
 const axiosInstance: AxiosInstance = axios.create({
   timeout: 25000,
