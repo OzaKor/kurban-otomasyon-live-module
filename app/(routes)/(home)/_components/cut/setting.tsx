@@ -8,14 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Play, RefreshCw, Pause, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import axios from "axios";
+import axios from "@/lib/axios";
 import useUserStore from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
+import {
+  FORBIDDEN_LIVE_MESSAGE,
+  extractApiErrorMessage,
+  getErrorStatus,
+  isForbiddenError,
+  isUnauthorizedError,
+} from "@/lib/apiError";
 import useCutListStore from "@/store/cuts/useCutListSrore";
 import logger from "@/lib/logger";
 
 const Setting = () => {
-  const { userToken } = useUserStore();
+  const { setCanLiveOperate } = useUserStore();
   const { state, setState } = useCutSettingStore();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -72,14 +79,9 @@ const Setting = () => {
       message,
       key,
     };
+    // Jeton lib/axios yakalayıcısında eklenir; 401 girişe yönlendirir.
     axios
-      .put(`/api/cuts/settings`, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${userToken}`,
-        },
-      })
+      .put(`/api/cuts/settings`, data)
       .then(() => {
         logger("Kesim ayarları güncellendi");
         showToast(
@@ -93,7 +95,23 @@ const Setting = () => {
         setUpdate(key);
       })
       .catch((error) => {
-        logger("Kesim ayarları hatası: ", error);
+        logger("Kesim ayarları hatası: ", getErrorStatus(error));
+        if (isUnauthorizedError(error)) {
+          return;
+        }
+        if (isForbiddenError(error)) {
+          setCanLiveOperate(false);
+          showToast("cut-setting-error", FORBIDDEN_LIVE_MESSAGE, "error");
+          return;
+        }
+        showToast(
+          "cut-setting-error",
+          extractApiErrorMessage(error, "Kesim ayarları güncellenemedi"),
+          "error",
+          undefined,
+          undefined,
+          "top-center",
+        );
       })
       .finally(() => {
         setLoading(false);

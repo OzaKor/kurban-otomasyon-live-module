@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useUserStore from "@/store/useUserStore";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import logger from "@/lib/logger";
+import { getErrorStatus, isUnauthorizedError } from "@/lib/apiError";
+import showToast from "@/lib/showToast";
 
 interface VerifyTokenProviderProps {
   children: React.ReactNode;
@@ -17,18 +18,27 @@ const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
+        if (!userToken) {
+          return;
+        }
+        // Doğrular ve canlı kesim yetkisini belirler (permissions alanı ya da 403 yoklaması).
         await fetchVerifyToken(userToken);
       } catch (error) {
-        logger("Token verification error: ", error);
-        if (error instanceof Error) {
-          if (axios.isAxiosError(error)) {
-            logger(
-              "error.response?.data.message: ",
-              error.response?.data.message,
-            );
-          }
+        logger("Token doğrulama hatası:", getErrorStatus(error));
+        if (isUnauthorizedError(error)) {
+          // Oturum gerçekten düşmüş: jetonu sil, girişe gönder.
           setTokenClear();
-          router.push("/auth/login");
+          router.push("/auth/login?reason=expired");
+        } else {
+          // Ağ kesintisi / sunucu hatası: oturumu düşürme, görevliyi uyar.
+          showToast(
+            "verify-token-error",
+            "Sunucuya ulaşılamadı, oturum doğrulanamadı. Bağlantıyı kontrol edin.",
+            "warning",
+            undefined,
+            undefined,
+            "top-center",
+          );
         }
       } finally {
         setIsLoading(false);

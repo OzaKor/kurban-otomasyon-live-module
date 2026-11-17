@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,9 @@ import {
 import LoginSchema from "@/app/auth/schema/loginSchema";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import useUserStore from "@/store/useUserStore";
+import useUserStore, {
+  liveAccessFromPermissions,
+} from "@/store/useUserStore";
 import showToast from "@/lib/showToast";
 import { LoginResponse } from "@/types/user";
 import { extractApiErrorMessage } from "@/lib/apiError";
@@ -43,6 +45,20 @@ const LoginForm = () => {
   const useUser = useUserStore();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  // 401 sonrası lib/axios buraya ?reason=expired ile yönlendirir.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("reason") === "expired") {
+      showToast(
+        "session-expired",
+        "Oturumunuzun süresi doldu, lütfen yeniden giriş yapın",
+        "warning",
+        undefined,
+        10000,
+        "top-center",
+      );
+    }
+  }, []);
 
   const defaultValues: defaultValuesInterface = {
     email: "",
@@ -131,7 +147,13 @@ const LoginForm = () => {
         id: data.user.id || "",
         name: data.user.name || "",
         role: data.user.role || "",
+        permissions: data.user.permissions,
       });
+      // permissions alanı varsa yetki hemen bilinir; yoksa null kalır ve
+      // VerifyTokenProvider korumalı ucun 403 yanıtıyla belirler.
+      useUser.setCanLiveOperate(
+        liveAccessFromPermissions(data.user.permissions),
+      );
 
       showToast(
         "login-success",

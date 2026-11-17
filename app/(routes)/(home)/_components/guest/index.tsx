@@ -1,8 +1,11 @@
 "use client";
 import React from "react";
-import Cut from "@/app/(routes)/(home)/_components/cut";
+import CutInfo from "@/app/(routes)/(home)/_components/cut/cut-info";
+
+// Misafir (girişsiz veya canlı kesim izni olmayan hesap) yalnız bilgi ekranını görür;
+// kesim listesi ve hissedar bilgisi yalnız yetkili hesapta gösterilir (tespit J, karar 1a).
 const Guest = () => {
-  return <Cut />;
+  return <CutInfo />;
 };
 
 export default Guest;

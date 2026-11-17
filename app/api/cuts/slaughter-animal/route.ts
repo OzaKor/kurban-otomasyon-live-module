@@ -1,36 +1,31 @@
 import { apiUrl } from "@/lib/axios";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import logger from "@/lib/logger";
+import {
+  backendHeaders,
+  getBearerToken,
+  proxyErrorResponse,
+  unauthorizedResponse,
+} from "@/lib/proxy";
 
 const url = `${apiUrl}/live/cuts/slaughter-animal`;
 
 export async function POST(request: NextRequest) {
+  const authorization = getBearerToken(request);
+  if (!authorization) {
+    return unauthorizedResponse();
+  }
+
   try {
     const body = await request.json();
-    logger("body: ", body);
-
     const response = await axios.post(url, body, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: backendHeaders(authorization),
     });
 
     return NextResponse.json({
       cut: response.data,
     });
   } catch (error) {
-    logger(`error ${apiUrl}: `, error);
-
-    if (axios.isAxiosError(error)) {
-      return NextResponse.json(
-        {
-          message: error.response?.data?.message || "Internal server error",
-          errors: error.response?.data?.errors,
-        },
-        { status: error.response?.status || 500 },
-      );
-    }
+    return proxyErrorResponse(error, "Hayvan kesme işlemi başarısız");
   }
 }

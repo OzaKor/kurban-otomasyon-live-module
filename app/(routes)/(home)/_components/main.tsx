@@ -6,17 +6,30 @@ import Guest from "@/app/(routes)/(home)/_components/guest";
 import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 import useCutListStore from "@/store/cuts/useCutListSrore";
 import CutDialog from "@/app/(routes)/(home)/_components/cut/cut-dialog";
+import {
+  NoLiveAccessNotice,
+  SessionExpiryNotice,
+} from "@/app/(routes)/(home)/_components/live-access-notices";
+import logger from "@/lib/logger";
+
+const POLL_INTERVAL_MS = 10000;
+const LIST_LIMIT = 20;
 
 const Main = () => {
-  const { user } = useUserStore();
+  const { userToken, canLiveOperate } = useUserStore();
   const { fetchCutSetting, state } = useCutSettingStore();
   const { fetchCutLists } = useCutListStore();
-  const isInitialMount = useRef(true);
-  const settingSetInterval = useRef<NodeJS.Timeout | null | number>(null);
+
+  // Erişim role değil cuttings.live-operate iznine bağlı (bkz. useUserStore.fetchLiveAccess).
+  const canOperate = !!userToken && canLiveOperate === true;
 
   const fetchDt = useCallback(
-    async (limit: number = 20) => {
-      await fetchCutSetting();
+    async (limit: number = LIST_LIMIT) => {
+      try {
+        await fetchCutSetting();
+      } catch (error) {
+        logger("Kesim ayarları alınamadı:", error);
+      }
 
       if (state.proccessEnd && state.processStop) {
         await fetchCutLists(limit);
@@ -25,32 +38,40 @@ const Main = () => {
     [fetchCutSetting, fetchCutLists, state],
   );
 
+  // Aralık her durum değişiminde yeniden kurulmasın diye en güncel fetchDt ref'te tutulur.
+  const fetchDtRef = useRef(fetchDt);
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      const limit = user?.role === "super_admin" ? 20 : 10;
-      fetchDt(limit);
+    fetchDtRef.current = fetchDt;
+  }, [fetchDt]);
+
+  useEffect(() => {
+    // Misafir ve yetkisiz hesap korumalı uçları hiç çağırmaz (tespit J).
+    if (!canOperate) {
+      return;
     }
 
-    const intervalMs = user?.role === "super_admin" ? 10000 : 5000;
-    const pollLimit = user?.role === "super_admin" ? 20 : 10;
+    fetchDtRef.current(LIST_LIMIT);
+    const interval = window.setInterval(() => {
+      fetchDtRef.current(LIST_LIMIT);
+    }, POLL_INTERVAL_MS);
 
-    settingSetInterval.current = window.setInterval(() => {
-      fetchDt(pollLimit);
-    }, intervalMs);
+    return () => clearInterval(interval);
+  }, [canOperate]);
 
-    return () => {
-      if (settingSetInterval.current) {
-        clearInterval(settingSetInterval.current);
-      }
-    };
-  }, [fetchDt, user?.role]);
+  if (canOperate) {
+    return (
+      <>
+        <SessionExpiryNotice />
+        <Manager />
+        <CutDialog />
+      </>
+    );
+  }
 
   return (
     <>
-      {user && user.role === "super_admin" && <Manager />}
-      {(!user || user.role !== "super_admin") && <Guest />}
-      <CutDialog />
+      {userToken && canLiveOperate === false && <NoLiveAccessNotice />}
+      <Guest />
     </>
   );
 };
