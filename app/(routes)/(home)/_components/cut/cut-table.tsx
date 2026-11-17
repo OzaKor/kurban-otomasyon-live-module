@@ -26,7 +26,9 @@ const CutTable = () => {
   const { cutLists } = useCutListStore();
   const { setCutDialog, setIsModalOpen } = useCutDialogStore();
 
-  const { user } = useUserStore();
+  const { userToken, canLiveOperate } = useUserStore();
+  // Rol adına değil cuttings.live-operate iznine bakılır.
+  const canOperate = !!userToken && canLiveOperate === true;
 
   const headings = [
     {
@@ -67,7 +69,7 @@ const CutTable = () => {
     );
   };
 
-  if (user && user.role == "super_admin") {
+  if (canOperate) {
     headings.push({
       title: "İşlem",
       key: "action",
@@ -175,7 +177,7 @@ const CutTable = () => {
                     <TableCell className="py-4 px-5 text-base">
                       {cutItem.tbody.cut_type}
                     </TableCell>
-                    {user && user.role == "super_admin" && (
+                    {canOperate && (
                       <TableCell className="text-right py-4 px-5">
                         <ActionBtns cutList={cutItem} />
                       </TableCell>

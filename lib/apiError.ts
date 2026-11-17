@@ -11,6 +11,17 @@ type ApiErrorPayload = {
   errors?: unknown;
 };
 
+export const FORBIDDEN_LIVE_MESSAGE = "Bu hesabın canlı kesim yetkisi yok";
+
+export function getErrorStatus(error: unknown): number | undefined {
+  return axios.isAxiosError(error) ? error.response?.status : undefined;
+}
+
+export const isForbiddenError = (error: unknown) => getErrorStatus(error) === 403;
+
+export const isUnauthorizedError = (error: unknown) =>
+  getErrorStatus(error) === 401;
+
 export function extractApiErrorMessage(
   error: unknown,
   fallbackMessage: string,

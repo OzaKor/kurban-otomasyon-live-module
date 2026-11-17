@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import axios, { AxiosResponse } from "axios";
+import axios from "@/lib/axios";
 import logger from "@/lib/logger";
+import { getErrorStatus } from "@/lib/apiError";
 
 interface CutDialogApiResponse {
   process: boolean;
@@ -46,10 +47,8 @@ interface CutDialogStore {
   setIsUniqueRegistration: (isUniqueRegistration: boolean) => void;
   setCutDialog: (cutDialog: ApiDialogItem) => void;
   setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) => void;
-  fetchCut: (
-    cutId: string | number,
-  ) => Promise<AxiosResponse<CutDialogApiResponse>>;
-  fetchCutSkip: (cutId: number) => Promise<AxiosResponse<CutDialogApiResponse>>;
+  fetchCut: (cutId: string | number) => Promise<unknown>;
+  fetchCutSkip: (cutId: number) => Promise<unknown>;
   fetchCutDialog: () => Promise<boolean>;
 }
 
@@ -64,57 +63,23 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
   setCutDialog: (cutDialog: ApiDialogItem) => set({ cutDialog }),
   setCurrentCutDialog: (currentCutDialog: ApiDialogItem | null) =>
     set({ currentCutDialog }),
+  // Jeton lib/axios yakalayıcısında eklenir; 401 girişe yönlendirir.
+  // Hatalar çağırana fırlatılır, mesajı/403 uyarısını bileşen gösterir.
   fetchCut: async (cutId: string | number) => {
-    try {
-      const response = await axios.post(`/api/cuts/slaughter-animal`, {
-        cut_id: cutId,
-      });
-
-      if (response.status !== 200) {
-        throw new Error("Error fetching cut");
-      }
-
-      return response;
-    } catch (error) {
-      logger("Kesim detayları alınırken hata:", error);
-      throw error;
-    }
+    return axios.post("/api/cuts/slaughter-animal", { cut_id: cutId });
   },
 
   fetchCutSkip: async (cutId: number) => {
-    try {
-      const response = await axios.post("/api/cuts/slaughter-animal-skip", {
-        cut_id: cutId,
-      });
-
-      if (response.status !== 200) {
-        throw new Error("Error fetching cut skip");
-      }
-
-      return response;
-    } catch (error) {
-      logger("Kesim atla alınırken hata:", error);
-      throw error;
-    }
+    return axios.post("/api/cuts/slaughter-animal-skip", { cut_id: cutId });
   },
 
   fetchCutDialog: async () => {
     try {
-      const response = await axios.get<CutDialogApiResponse>(
+      const body = (await axios.get(
         "/api/cuts/dialog",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        },
-      );
+      )) as unknown as CutDialogApiResponse;
 
-      if (response.status !== 200) {
-        throw new Error("Kesim detayları alınırken hata oluştu");
-      }
-
-      const { data, process } = response.data;
+      const { data, process } = body;
 
       if (process) {
         if (get().currentCutDialog === null) {
@@ -130,7 +95,7 @@ const useCutDialogStore = create<CutDialogStore>((set, get) => ({
 
       return process;
     } catch (error) {
-      logger("Kesim detayları alınamadı:", error);
+      logger("Kesim detayları alınamadı:", getErrorStatus(error));
       return false;
     }
   },

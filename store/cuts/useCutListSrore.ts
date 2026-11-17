@@ -2,6 +2,14 @@ import { create } from "zustand";
 import CutList, { Tbody } from "@/types/cut-list";
 import axios from "@/lib/axios";
 import logger from "@/lib/logger";
+import useUserStore from "@/store/useUserStore";
+import showToast from "@/lib/showToast";
+import {
+  extractApiErrorMessage,
+  getErrorStatus,
+  isForbiddenError,
+  isUnauthorizedError,
+} from "@/lib/apiError";
 
 interface RawApiCutItem {
   tbody: Tbody;
@@ -133,7 +141,26 @@ const useCutListStore = create<CutListStore>((set, get) => ({
         set(updates);
       }
     } catch (error) {
-      logger("Kesim listeleri alınırken hata oluştu:", error);
+      logger("Kesim listeleri alınırken hata oluştu:", getErrorStatus(error));
+
+      if (isForbiddenError(error)) {
+        // İzin yok: listeyi temizle, ekran "yetki yok" uyarısına geçsin.
+        set({ cutLists: [] });
+        useUserStore.getState().setCanLiveOperate(false);
+        return;
+      }
+
+      // 401 global yakalayıcıda girişe yönlendirir; diğer hatalar sessiz kalmasın.
+      if (!isUnauthorizedError(error)) {
+        showToast(
+          "cut-list-error",
+          extractApiErrorMessage(error, "Kesim listesi güncellenemedi"),
+          "error",
+          undefined,
+          undefined,
+          "top-center",
+        );
+      }
     }
   },
 }));

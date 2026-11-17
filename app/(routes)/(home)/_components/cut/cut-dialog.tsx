@@ -1,6 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Howl } from "howler";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/layout/logo";
 import useUserStore from "@/store/useUserStore";
@@ -25,84 +24,23 @@ import {
 import useCutDialogStore from "@/store/cuts/useCutDialogStore";
 import useCutListStore from "@/store/cuts/useCutListSrore";
 import showToast from "@/lib/showToast";
-import useCutSettingStore from "@/store/cuts/useCutSettingStore";
 import logger from "@/lib/logger";
+import {
+  FORBIDDEN_LIVE_MESSAGE,
+  extractApiErrorMessage,
+  getErrorStatus,
+  isForbiddenError,
+  isUnauthorizedError,
+} from "@/lib/apiError";
 
 function CutDialog() {
-  const { user } = useUserStore();
-  const {
-    cutDialog,
-    isModalOpen,
-    setIsModalOpen,
-    fetchCut,
-    fetchCutSkip,
-    fetchCutDialog,
-    currentCutDialog,
-    setCurrentCutDialog,
-  } = useCutDialogStore();
+  const { userToken, canLiveOperate, setCanLiveOperate } = useUserStore();
+  // Rol adına değil cuttings.live-operate iznine bakılır.
+  const canOperate = !!userToken && canLiveOperate === true;
+  const { cutDialog, isModalOpen, setIsModalOpen, fetchCut, fetchCutSkip } =
+    useCutDialogStore();
   const { cutLists, setCutLists, fetchCutLists } = useCutListStore();
-  const isInitialMount = useRef(true);
-  const { state } = useCutSettingStore();
   const [loading, setLoading] = useState(false);
-
-  // Gösterilen kesim ID'lerini saklamak için
-  // const shownCutIds = useRef<Set<string | number>>(new Set());
-
-  // Ses için ref
-  const audioRef = useRef<Howl | null>(null);
-
-  // Component mount olduğunda audio elementi oluştur
-  useEffect(() => {
-    // ... Howl instance creation
-    audioRef.current = new Howl({
-      src: ["/sound/ding-dong.mp3"],
-      loop: false,
-      html5: true,
-      onplayerror: (id, error) => {
-        logger("Ses çalma hatası:", error);
-        // ... (yukarıdaki gibi hata yönetimi)
-      },
-      onloaderror: (id, error) => {
-        logger("Ses yükleme hatası:", error);
-      },
-    });
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.unload(); // Howler örneğini ve kaynaklarını temizler
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
-  // Ses çalma fonksiyonu
-  const playNotificationSound = useCallback(() => {
-    if (audioRef.current) {
-      if (Howler.ctx && Howler.ctx.state === "suspended") {
-        Howler.ctx
-          .resume()
-          .then(() => {
-            if (audioRef.current) {
-              audioRef.current.seek(0);
-              audioRef.current.play();
-            }
-          })
-          .catch((e) => logger("Audio context resume error:", e));
-      } else {
-        if (audioRef.current) {
-          audioRef.current.seek(0);
-          audioRef.current.play();
-        }
-      }
-    }
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.unload();
-        audioRef.current = null;
-      }
-    };
-  }, []);
 
   const removeCutList = (removeCutId: number) => {
     const newCutLists = cutLists.filter(
@@ -111,95 +49,29 @@ function CutDialog() {
     setCutLists(newCutLists);
   };
 
-  const getDialog = useCallback(async () => {
-    if (user?.role != "super_admin") {
-      if (state.proccessEnd && state.processStop) {
-        const fetchDialog = await fetchCutDialog();
-        if (fetchDialog) {
-          // Yeni kesim kontrolü - ID bazlı
-          if (cutDialog) {
-            //  if (cutDialog && !shownCutIds.current.has(cutDialog.cut_info.id)) {
-            // Bu kesim daha önce gösterilmemiş
-            //   shownCutIds.current.add(cutDialog.cut_info.id);
-            setCurrentCutDialog(cutDialog);
-            setIsModalOpen(true);
-            playNotificationSound(); // Ses çal
+  /*
+   * Eski davranış: girişsiz/misafir ekranı /api/cuts/dialog ucunu 5 sn'de bir yoklayıp
+   * hissedar adlarını sesli açılır pencereyle gösteriyordu. Tespit J ile bu uç
+   * jeton + cuttings.live-operate istiyor ve karar 1a gereği misafir yalnız bilgi ekranını
+   * görüyor. Pencere artık yalnız yetkili görevlinin listeden açtığı kesim içindir.
+   */
 
-            setTimeout(() => {
-              setIsModalOpen(false);
-            }, 10000);
-          } else if (!currentCutDialog && cutDialog) {
-            // İlk kez modal açılıyor
-            // shownCutIds.current.add(cutDialog.cut_info.id);
-            setCurrentCutDialog(cutDialog);
-            setIsModalOpen(true);
-            playNotificationSound(); // Ses çal
-
-            setTimeout(() => {
-              setIsModalOpen(false);
-            }, 10000);
-          }
-        }
-      } else {
-        setIsModalOpen(false);
-      }
+  const handleActionError = (error: unknown, fallbackMessage: string) => {
+    logger("error: ", getErrorStatus(error));
+    if (isUnauthorizedError(error)) {
+      return; // lib/axios girişe yönlendirir.
     }
-  }, [
-    user,
-    state,
-    cutDialog,
-    currentCutDialog,
-    fetchCutDialog,
-    setCurrentCutDialog,
-    setIsModalOpen,
-    playNotificationSound,
-  ]);
-
-  // Belirli aralıklarla gösterilen kesim listesini temizle (örn: 1 saat)
-  // useEffect(() => {
-  //   const clearShownCuts = setInterval(() => {
-  //     shownCutIds.current.clear();
-  //   }, 3600000); // 1 saat
-
-  //   return () => clearInterval(clearShownCuts);
-  // }, []);
-
-  // Modal kapandığında hemen kontrol et
-  useEffect(() => {
-    if (!isModalOpen && !isInitialMount.current) {
-      // Modal kapandı, hemen yeni kesim var mı kontrol et
-      const checkTimeout = setTimeout(() => {
-        if (!user || user.role !== "super_admin") {
-          getDialog();
-        }
-      }, 15000); // Küçük bir gecikme ile
-
-      return () => clearTimeout(checkTimeout);
-    }
-  }, [isModalOpen, user, getDialog]);
-
-  // Polling logic
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      if (!user || user.role !== "super_admin") {
-        getDialog();
-      }
+    if (isForbiddenError(error)) {
+      setCanLiveOperate(false);
+      showToast("cut-dialog-error", FORBIDDEN_LIVE_MESSAGE, "error");
       return;
     }
-
-    // Modal açıkken veya admin ise polling yapma
-    if (isModalOpen || (user && user.role === "super_admin")) {
-      return;
-    }
-
-    if (!user || user.role !== "super_admin") {
-      const timer = setInterval(() => {
-        getDialog();
-      }, 5000);
-      return () => clearInterval(timer);
-    }
-  }, [user, state, isModalOpen, cutDialog, currentCutDialog, getDialog]);
+    showToast(
+      "cut-dialog-error",
+      extractApiErrorMessage(error, fallbackMessage),
+      "error",
+    );
+  };
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -211,15 +83,14 @@ function CutDialog() {
               <Logo />
             </div>
             {/* Kesim Tarihi */}
-            {!user ||
-              (user.role !== "super_admin" && (
-                <div className="flex flex-col items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
-                    {cutDialog?.cut_info.slaughter_date}
-                  </h1>
-                  <span className="text-xs text-gray-400">Kesim Tarihi</span>
-                </div>
-              ))}
+            {!canOperate && (
+              <div className="flex flex-col items-center gap-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700 text-center">
+                  {cutDialog?.cut_info.slaughter_date}
+                </h1>
+                <span className="text-xs text-gray-400">Kesim Tarihi</span>
+              </div>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -326,7 +197,7 @@ function CutDialog() {
                             <p className="font-bold text-gray-800 text-lg">
                               {customer.full_name}
                             </p>
-                            {user?.role === "super_admin" && (
+                            {canOperate && (
                               <div className="flex items-center gap-3 mt-1">
                                 <span className="text-sm font-semibold text-gray-600">
                                   {customer.price}
@@ -396,7 +267,7 @@ function CutDialog() {
             </div>
 
             {/* Detaylı Ödeme Bilgileri Tablosu */}
-            {user && user.role === "super_admin" ? (
+            {canOperate ? (
               <div className="mt-10 border-t border-gray-200 pt-8">
                 <h4 className="font-bold text-green-700 mb-6 text-center text-xl">
                   Ödeme Durumları
@@ -477,7 +348,7 @@ function CutDialog() {
         </DialogDescription>
 
         {/* Modal Footer - Butonlar */}
-        {user && user.role === "super_admin" && (
+        {canOperate && (
           <DialogFooter className="px-6 lg:px-8 pb-6">
             <div className="flex justify-between w-full gap-4">
               <div className="flex gap-4">
@@ -497,14 +368,12 @@ function CutDialog() {
                           "success",
                         );
                       })
-                      .catch((error) => {
-                        showToast(
-                          "cut-dialog-error",
+                      .catch((error) =>
+                        handleActionError(
+                          error,
                           "Hayvan kesme işlemi sırasında hata oluştu",
-                          "error",
-                        );
-                        logger("error: ", error);
-                      })
+                        ),
+                      )
                       .finally(() => {
                         setLoading(false);
                         setIsModalOpen(!isModalOpen);
@@ -574,14 +443,12 @@ function CutDialog() {
                           "success",
                         );
                       })
-                      .catch((error) => {
-                        showToast(
-                          "cut-dialog-error",
+                      .catch((error) =>
+                        handleActionError(
+                          error,
                           "Hayvan kesmi atlanırken hata oluştu",
-                          "error",
-                        );
-                        logger("error: ", error);
-                      })
+                        ),
+                      )
                       .finally(() => {
                         setLoading(false);
                         setIsModalOpen(!isModalOpen);
