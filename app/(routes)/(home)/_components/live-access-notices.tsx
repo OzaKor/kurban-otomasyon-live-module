@@ -5,6 +5,7 @@ import { ShieldAlert, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useUserStore, { TOKEN_TTL_MS } from "@/store/useUserStore";
 import { FORBIDDEN_LIVE_MESSAGE } from "@/lib/apiError";
+import { resetLiveStores } from "@/store/cuts/resetLiveStores";
 
 const WARN_BEFORE_MS = 60 * 60 * 1000;
 
@@ -12,6 +13,8 @@ const useRelogin = () => {
   const { logout } = useUserStore();
   const router = useRouter();
   return () => {
+    // Görevlinin listesi bellekteyken çıkılabilir: kesim verisini de sil.
+    resetLiveStores();
     logout();
     router.push("/auth/login");
   };

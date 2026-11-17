@@ -30,6 +30,12 @@ type UserStore = {
    * Rol adına bakılmaz; izni hangi rol taşırsa taşısın erişir.
    */
   canLiveOperate: boolean | null;
+  /**
+   * 401 ile oturum düştü: VerifyTokenProvider bunu görünce canlı kesim verisini sıfırlar
+   * ve router ile giriş ekranına yönlendirir. sessionStorage'a yazılmaz.
+   */
+  sessionExpired: boolean;
+  setSessionExpired: (value: boolean) => void;
   setUserToken: (token: string) => void;
   setTokenClear: () => void;
   setUser: (user: User) => void;
@@ -47,6 +53,8 @@ const useUserStore = create<UserStore>()(
       user: null,
       loginAt: null,
       canLiveOperate: null,
+      sessionExpired: false,
+      setSessionExpired: (value: boolean) => set({ sessionExpired: value }),
       setUserToken: (token: string) =>
         set({ userToken: token, loginAt: Date.now(), canLiveOperate: null }),
       setTokenClear: () =>
@@ -116,22 +124,29 @@ const useUserStore = create<UserStore>()(
     {
       name: "user-session",
       storage: createJSONStorage(() => sessionStorage),
+      // Yalnız oturum alanları saklanır; sessionExpired geçici bir sinyaldir, taşınmaz.
+      partialize: (state) => ({
+        userToken: state.userToken,
+        user: state.user,
+        loginAt: state.loginAt,
+        canLiveOperate: state.canLiveOperate,
+      }),
     },
   ),
 );
 
-let redirectingToLogin = false;
-
 configureAuth({
   getToken: () => useUserStore.getState().userToken,
   onUnauthorized: () => {
-    // Jeton yoksa (misafir) yönlendirilecek bir oturum da yoktur.
-    if (redirectingToLogin || !useUserStore.getState().userToken) {
+    const { userToken, sessionExpired, clear } = useUserStore.getState();
+    // Jeton yoksa (misafir) düşecek oturum yok; zaten işaretlendiyse tekrar etme.
+    if (!userToken || sessionExpired) {
       return;
     }
-    redirectingToLogin = true;
-    useUserStore.getState().clear();
-    window.location.assign("/auth/login?reason=expired");
+    // Yönlendirme burada (React dışı) yapılmaz: VerifyTokenProvider bayrağı görüp
+    // canlı kesim verisini sıfırlar ve router.replace ile girişe gönderir.
+    clear();
+    useUserStore.setState({ sessionExpired: true });
   },
 });
 

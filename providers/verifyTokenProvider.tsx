@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import logger from "@/lib/logger";
 import { getErrorStatus, isUnauthorizedError } from "@/lib/apiError";
 import showToast from "@/lib/showToast";
+import { resetLiveStores } from "@/store/cuts/resetLiveStores";
 
 interface VerifyTokenProviderProps {
   children: React.ReactNode;
@@ -12,8 +13,20 @@ interface VerifyTokenProviderProps {
 
 const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const { userToken, setTokenClear, fetchVerifyToken } = useUserStore();
+  const { userToken, fetchVerifyToken, sessionExpired, setSessionExpired } =
+    useUserStore();
   const router = useRouter();
+
+  // 401 → lib/axios yakalayıcısı oturumu temizleyip sessionExpired'ı işaretler.
+  // Yönlendirme ve veri temizliği burada, router ile yapılır (tam sayfa yenileme yok).
+  useEffect(() => {
+    if (!sessionExpired) {
+      return;
+    }
+    resetLiveStores();
+    router.replace("/auth/login?reason=expired");
+    setSessionExpired(false);
+  }, [sessionExpired, router, setSessionExpired]);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -26,27 +39,26 @@ const VerifyTokenProvider = ({ children }: VerifyTokenProviderProps) => {
       } catch (error) {
         logger("Token doğrulama hatası:", getErrorStatus(error));
         if (isUnauthorizedError(error)) {
-          // Oturum gerçekten düşmüş: jetonu sil, girişe gönder.
-          setTokenClear();
-          router.push("/auth/login?reason=expired");
-        } else {
-          // Ağ kesintisi / sunucu hatası: oturumu düşürme, görevliyi uyar.
-          showToast(
-            "verify-token-error",
-            "Sunucuya ulaşılamadı, oturum doğrulanamadı. Bağlantıyı kontrol edin.",
-            "warning",
-            undefined,
-            undefined,
-            "top-center",
-          );
+          // Oturum gerçekten düşmüş: lib/axios sessionExpired'ı işaretledi,
+          // yukarıdaki effect temizleyip girişe gönderir.
+          return;
         }
+        // Ağ kesintisi / sunucu hatası: oturumu düşürme, görevliyi uyar.
+        showToast(
+          "verify-token-error",
+          "Sunucuya ulaşılamadı, oturum doğrulanamadı. Bağlantıyı kontrol edin.",
+          "warning",
+          undefined,
+          undefined,
+          "top-center",
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     verifyToken();
-  }, [fetchVerifyToken, userToken, router, setTokenClear]);
+  }, [fetchVerifyToken, userToken]);
 
   if (isLoading) {
     return (
